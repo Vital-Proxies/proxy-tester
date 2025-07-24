@@ -1,0 +1,67 @@
+{
+  "name": "vital-proxy-tester",
+  "version": "1.0.0",
+  "private": true,
+  "author": "Expensiveee <expensiveee@vital-proxies.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vital-proxies/proxy-tester.git"
+  },
+  "homepage": "https://github.com/vital-proxies/proxy-tester",
+  "bugs": {
+    "url": "https://github.com/vital-proxies/proxy-tester/issues"
+  },
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "start": "next start",
+    "tauri": "tauri",
+    "lint": "next lint",
+    "build:frontend": "next build",
+    "build:server": "node ./scripts/build-server.mjs",
+    "package:server": "node ./scripts/pkg-platform.mjs",
+    "build": "yarn build:frontend && yarn build:server && yarn package:server"
+  },
+  "dependencies": {
+    "@radix-ui/react-alert-dialog": "^1.1.14",
+    "@radix-ui/react-progress": "^1.1.7",
+    "@radix-ui/react-slot": "^1.2.3",
+    "@radix-ui/react-switch": "^1.2.5",
+    "@radix-ui/react-tooltip": "^1.2.7",
+    "@tauri-apps/plugin-dialog": "^2.3.0",
+    "@tauri-apps/plugin-http": "~2",
+    "@tauri-apps/plugin-opener": "~2",
+    "@tauri-apps/plugin-process": "^2.3.0",
+    "@tauri-apps/plugin-shell": "^2.3.0",
+    "@tauri-apps/plugin-updater": "^2.9.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "framer-motion": "^12.23.6",
+    "https-proxy-agent": "^7.0.6",
+    "lucide-react": "^0.525.0",
+    "next": "15.4.1",
+    "node-fetch": "^3.3.2",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "tailwind-merge": "^3.3.1",
+    "zustand": "^5.0.6"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@tauri-apps/cli": "^2.6.2",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@yao-pkg/pkg": "^6.6.0",
+    "esbuild": "^0.25.8",
+    "eslint": "^9",
+    "eslint-config-next": "15.4.3",
+    "tailwindcss": "^4",
+    "tw-animate-css": "^1.3.5",
+    "typescript": "^5"
+  }
+}

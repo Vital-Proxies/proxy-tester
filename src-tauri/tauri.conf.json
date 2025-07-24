@@ -1,0 +1,52 @@
+{
+  "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
+  "productName": "Vital Proxy Tester",
+  "version": "1.0.0",
+  "identifier": "com.vital-proxies.tester",
+  "build": {
+    "frontendDist": "../out",
+    "devUrl": "http://localhost:3000",
+    "beforeDevCommand": "yarn build:server && yarn package:server && yarn dev",
+    "beforeBuildCommand": "yarn build"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "Vital Proxy Tester",
+        "minWidth": 1200,
+        "minHeight": 600,
+        "resizable": true,
+        "fullscreen": false,
+        "devtools": true,
+        "center": true
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "mainBinaryName": "Vital.Proxy.Tester",
+  "bundle": {
+    "createUpdaterArtifacts": true,
+    "externalBin": ["bin/server"],
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ]
+  },
+  "plugins": {
+    "updater": {
+      "active": true,
+      "dialog": false,
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDUzQTlDRkJGN0NGMTY5QjQKUldTMGFmRjh2OCtwVTZ6ZDB5WjV4cHAxeEN0TlhGQXBEa2ZkL01aMUtrR2dNSWNxKy9ONmR5ZlcK",
+      "endpoints": [
+        "https://github.com/vital-proxies/proxy-tester/releases/latest/download/latest.json"
+      ]
+    }
+  }
+}
