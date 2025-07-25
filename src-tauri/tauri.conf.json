@@ -27,6 +27,9 @@
   },
   "mainBinaryName": "Vital.Proxy.Tester",
   "bundle": {
+    "macOS": {
+      "entitlements": "./Entitlements.plist"
+    },
     "createUpdaterArtifacts": true,
     "externalBin": ["bin/server"],
     "active": true,
