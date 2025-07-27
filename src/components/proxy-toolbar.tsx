@@ -1,7 +1,7 @@
 "use client";
 
 import { useProxyTesterStore } from "@/store/proxy";
-import { ProxyStreamResult } from "@/types";
+import { ProxyResult } from "@/types";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, Loader2, X, Zap } from "lucide-react";
 import { useApi } from "@/hooks/useApiUrl";
@@ -35,13 +35,8 @@ export default function ProxyToolbar() {
         headers: { "Content-Type": "application/json" },
         signal: controller.signal,
         body: JSON.stringify({
-          proxies: loadedProxies.map((p) => ({
-            formatted: p.formatted,
-            raw: p.raw,
-          })),
-          targetUrl: options.targetUrl,
-          latencyCheck: options.latencyCheck,
-          ipLookup: options.ipLookup,
+          proxies: loadedProxies,
+          options: { ...options },
         }),
       });
 
@@ -59,11 +54,13 @@ export default function ProxyToolbar() {
         const lines = value.split("\n\n").filter(Boolean);
         for (const line of lines) {
           if (line.startsWith("data: ")) {
-            const result: ProxyStreamResult = JSON.parse(line.substring(6));
+            const result: ProxyResult = JSON.parse(line.substring(6));
             addTestResult({
               ...result,
               raw: result.raw,
               formatted: result.formatted,
+              protocol: result.protocol,
+              status: result.status,
             });
           }
         }

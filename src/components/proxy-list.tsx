@@ -50,6 +50,7 @@ export default function ProxyList() {
         <TableHeader className="bg-accent sticky w-full top-0 z-10">
           <TableRow>
             <TableHead className="text-left text-sm w-full">Proxy</TableHead>
+            <TableHead className="text-left text-sm">Type</TableHead>
             <TableHead className="text-left text-sm w-[120px]">
               Status
             </TableHead>

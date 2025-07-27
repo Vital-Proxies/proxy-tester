@@ -1,3 +1,4 @@
+import { NormalizedProxy, ProxyProtocol } from "@/types";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -15,37 +16,77 @@ export function countryCodeToFlag(isoCode: string): string {
   );
 }
 
-export function normalizeProxy(raw: string): string | null {
+export function normalizeProxy(raw: string): NormalizedProxy | null {
   const trimmed = raw.trim();
 
   // Remove protocol prefix if present
-  const clean = trimmed.replace(/^(http|https?|socks5?|socks4):\/\//i, "");
+  let protocol: ProxyProtocol = "unknown";
+  let clean = trimmed;
+
+  const protocolMatch = trimmed.match(/^(https?|socks[45]?):\/\//i);
+  if (protocolMatch) {
+    const detectedProtocol = protocolMatch[1].toLowerCase();
+    switch (detectedProtocol) {
+      case "http":
+        protocol = "http";
+        break;
+      case "https":
+        protocol = "https";
+        break;
+      case "socks4":
+        protocol = "socks4";
+        break;
+      case "socks5":
+      case "socks":
+        protocol = "socks5";
+        break;
+      default:
+        protocol = "http";
+    }
+    clean = trimmed.replace(/^[^:]+:\/\//i, "");
+  }
 
   // user:pass@host:port
-  const match1 = clean.match(/^([^:@\s]+):([^:@\s]+)@([a-zA-Z0-9.-]+):(\d+)$/);
+  const match1 = clean.match(/^([^:@\s]+):([^:@\s]*)@([a-zA-Z0-9.-]+):(\d+)$/);
   if (match1) {
-    return `${match1[1]}:${match1[2]}@${match1[3]}:${match1[4]}`;
+    const [, user, pass, host, port] = match1;
+    return {
+      formatted: `${user}:${pass}@${host}:${port}`,
+      protocol,
+    };
   }
 
   // host:port:user:pass
   const match2 = clean.match(/^([a-zA-Z0-9.-]+):(\d+):([^:@\s]+):([^:@\s]+)$/);
   if (match2) {
-    return `${match2[3]}:${match2[4]}@${match2[1]}:${match2[2]}`;
+    const [, host, port, user, pass] = match2;
+    return {
+      formatted: `${user}:${pass}@${host}:${port}`,
+      protocol,
+    };
   }
 
   // user:pass:host:port
   const match3 = clean.match(/^([^:@\s]+):([^:@\s]+):([a-zA-Z0-9.-]+):(\d+)$/);
   if (match3) {
-    return `${match3[1]}:${match3[2]}@${match3[3]}:${match3[4]}`;
+    const [, user, pass, host, port] = match3;
+    return {
+      formatted: `${user}:${pass}@${host}:${port}`,
+      protocol,
+    };
   }
 
   // host:port (IP or domain)
   const match4 = clean.match(/^([a-zA-Z0-9.-]+):(\d+)$/);
   if (match4) {
-    return `${match4[1]}:${match4[2]}`;
+    const [, host, port] = match4;
+    return {
+      formatted: `${host}:${port}`,
+      protocol,
+    };
   }
 
   // Unknown format
-  console.log("Unknown proxy format:", raw);
+  console.log("Unknown or invalid proxy format:", raw);
   return null;
 }

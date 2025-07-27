@@ -1,9 +1,9 @@
 "use client";
 import { motion } from "framer-motion";
-import { type Proxy, type ProxyStatus } from "@/types";
+import { ProxyProtocol, type Proxy, type ProxyStatus } from "@/types";
 import { cn, countryCodeToFlag } from "@/lib/utils";
 import { TableCell } from "@/components/ui/table";
-import { Check, Clipboard, Eye, Loader2, Trash } from "lucide-react";
+import { Check, Clipboard, Eye, Globe2, Trash } from "lucide-react";
 import { Button } from "./ui/button";
 import {
   Tooltip,
@@ -44,16 +44,45 @@ export default function ProxyListRow({
     ProxyStatus,
     { className: string; label: string }
   > = {
-    ok: { className: "bg-green-600/10 text-green-400", label: "OK" },
-    fail: { className: "bg-red-600/10 text-red-500", label: "Fail" },
-    testing: { className: "bg-blue-600/10 text-blue-400", label: "Testing" },
-    pending: {
-      className: "bg-muted/20 text-muted-foreground",
-      label: "Pending",
+    ok: {
+      className: "bg-green-600/10 text-green-400 border-green-600/20",
+      label: "OK",
+    },
+
+    fail: {
+      className: "bg-red-600/10 text-red-400 border-red-600/20",
+      label: "Failed",
+    },
+  };
+
+  const protocolConfig: Record<
+    ProxyProtocol,
+    { label: string; className: string }
+  > = {
+    http: {
+      label: "HTTP",
+      className: "bg-blue-600/10 text-blue-400 border-blue-600/20",
+    },
+    https: {
+      label: "HTTPS",
+      className: "bg-sky-600/10 text-sky-400 border-sky-600/20",
+    },
+    socks4: {
+      label: "SOCKS4",
+      className: "bg-purple-600/10 text-purple-400 border-purple-600/20",
+    },
+    socks5: {
+      label: "SOCKS5",
+      className: "bg-violet-600/10 text-violet-400 border-violet-600/20",
+    },
+    unknown: {
+      label: "N/A",
+      className: "bg-gray-600/10 text-gray-400 border-gray-600/20",
     },
   };
 
   const currentStatus = statusConfig[proxy.status];
+  const currentProtocol = protocolConfig[proxy.protocol || "unknown"];
 
   return (
     <TooltipProvider>
@@ -69,7 +98,7 @@ export default function ProxyListRow({
           <Tooltip>
             <TooltipTrigger asChild>
               <div className="flex h-full w-full cursor-pointer items-center justify-start">
-                <span className="truncate">{proxy.raw}</span>
+                <span className="truncate">{proxy.formatted}</span>
               </div>
             </TooltipTrigger>
             <TooltipContent>
@@ -78,17 +107,27 @@ export default function ProxyListRow({
           </Tooltip>
         </TableCell>
 
+        {proxy.protocol && (
+          <TableCell className="text-sm">
+            <div
+              className={cn(
+                "mx-auto w-fit rounded-md px-2 py-0.5 font-semibold tracking-wider",
+                currentProtocol.className
+              )}
+            >
+              {currentProtocol.label}
+            </div>
+          </TableCell>
+        )}
+
         <TableCell>
           <div
             className={cn(
-              "flex items-center justify-center gap-2 rounded-fulltext-center px-2.5 py-1 text-xs font-semibold",
+              "flex items-center justify-center gap-2 text-center px-2.5 rounded-lg py-1 text-xs font-semibold border",
               currentStatus.className
             )}
           >
-            {proxy.status === "testing" && (
-              <Loader2 className="size-3 animate-spin" />
-            )}
-            <span className="text-center">{currentStatus.label}</span>
+            <span className="capitalize">{currentStatus.label}</span>
           </div>
         </TableCell>
 
@@ -101,7 +140,7 @@ export default function ProxyListRow({
         {ipLookup && (
           <TableCell>
             {proxy.ip && proxy.countryCode ? (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5">
                 <span className="text-xl">
                   {countryCodeToFlag(proxy.countryCode)}
                 </span>
@@ -131,9 +170,7 @@ export default function ProxyListRow({
                 </div>
               </div>
             ) : (
-              <span className="text-sm text-muted-foreground">
-                {proxy.status === "testing" ? "Resolving..." : "—"}
-              </span>
+              <span className="text-sm text-muted-foreground">-</span>
             )}
           </TableCell>
         )}
@@ -183,9 +220,13 @@ export default function ProxyListRow({
 
             <AlertDialogContent className="min-w-[600px] bg-white/5 backdrop-blur-xl">
               <AlertDialogHeader>
-                <AlertDialogTitle className="flex items-center gap-3">
+                <AlertDialogTitle className="flex items-center gap-1.5">
                   <span className="text-2xl">
-                    {countryCodeToFlag(proxy.countryCode ?? "")}
+                    {proxy.countryCode ? (
+                      countryCodeToFlag(proxy.countryCode ?? "")
+                    ) : (
+                      <Globe2 className="size-5" />
+                    )}
                   </span>
                   Proxy Details
                 </AlertDialogTitle>
@@ -201,14 +242,11 @@ export default function ProxyListRow({
                 <div className="flex items-center">
                   <div
                     className={cn(
-                      "flex items-center justify-center gap-2 rounded-full px-2.5 py-1 text-xs font-semibold",
+                      "flex items-center justify-center gap-2 text-center px-2.5 rounded-lg py-1 text-xs font-semibold border",
                       currentStatus.className
                     )}
                   >
-                    {proxy.status === "testing" && (
-                      <Loader2 className="size-3 animate-spin" />
-                    )}
-                    <span>{currentStatus.label}</span>
+                    <span className="capitalize">{currentStatus.label}</span>
                   </div>
                 </div>
 
