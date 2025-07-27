@@ -1,11 +1,11 @@
-name: "Build and Release"
+name: "Dev Build and Publish to dev-latest"
 
 on:
   push:
     tags:
       - "*.*.*"
     branches:
-      - main
+      - dev
   workflow_dispatch:
 
 jobs:
@@ -57,12 +57,7 @@ jobs:
       - name: Package Sidecar for Target
         run: yarn package:server ${{ matrix.target }}
 
-      - name: Patch updater endpoint to stable
-        run: |
-          jq '.updater.endpoints = ["https://github.com/vital-proxies/proxy-tester/releases/latest/download/latest.json"]' \
-            src-tauri/tauri.conf.json > tmp.json && mv tmp.json src-tauri/tauri.conf.json
-
-      - name: Build Tauri App
+      - name: Build Tauri App (Dev)
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -75,9 +70,9 @@ jobs:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
         with:
-          tagName: __VERSION__
-          releaseName: "__VERSION__"
+          tagName: dev-latest
+          releaseName: "Development Build (dev-latest)"
           releaseBody: ""
-          releaseDraft: true
-          prerelease: false
+          releaseDraft: false
+          prerelease: true
           args: --target ${{ matrix.target }}
