@@ -43,8 +43,8 @@ export default function UpdateDialog({ updater }: UpdateDialogProps) {
           </AlertDialogDescription>
         </AlertDialogHeader>
 
-        <div className="prose prose-sm dark:prose-invert max-h-48 overflow-y-auto rounded-md border p-4">
-          <pre className="font-mono">
+        <div className="prose prose-sm rounded-md border p-4">
+          <pre className="font-mono whitespace-pre-wrap">
             {update.body || "No release notes provided."}
           </pre>
         </div>
