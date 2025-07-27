@@ -2,14 +2,70 @@ name: "Build and Release"
 
 on:
   push:
-    tags:
-      - "*.*.*"
     branches:
       - main
   workflow_dispatch:
 
 jobs:
+  # Quick version check job (runs once)
+  check-version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get_version.outputs.version }}
+      should_build: ${{ steps.check.outputs.should_build }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Get App Version
+        id: get_version
+        run: |
+          VERSION=$(jq -r '.package.version' src-tauri/tauri.conf.json)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+      - name: Check if should build
+        id: check
+        run: |
+          if [[ "${{ steps.get_version.outputs.version }}" == *"-dev"* ]]; then
+            echo "should_build=false" >> $GITHUB_OUTPUT
+            echo "Skipping dev version: ${{ steps.get_version.outputs.version }}"
+          else
+            echo "should_build=true" >> $GITHUB_OUTPUT
+            echo "Building stable version: ${{ steps.get_version.outputs.version }}"
+          fi
+
+  # Fast frontend build (runs once, shared by all platforms)
+  build-frontend:
+    needs: check-version
+    if: needs.check-version.outputs.should_build == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js with cache
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: "yarn"
+
+      - name: Install and build frontend
+        run: |
+          yarn install --frozen-lockfile --prefer-offline
+          yarn build:frontend
+          yarn build:server
+
+      - name: Upload built frontend
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-build
+          path: |
+            dist/
+            build/
+            .next/
+            out/
+          retention-days: 1
+
+  # Platform-specific builds (run in parallel)
   publish-tauri:
+    needs: [check-version, build-frontend]
+    if: needs.check-version.outputs.should_build == 'true'
     permissions:
       contents: write
     strategy:
@@ -29,48 +85,50 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: setup node
+      - name: Download frontend build
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-build
+          path: .
+
+      - name: Setup Node.js (minimal)
         uses: actions/setup-node@v4
         with:
           node-version: lts/*
 
-      - name: install Rust stable
+      - name: Cache Rust dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            src-tauri/target
+          key: ${{ runner.os }}-${{ matrix.target }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ matrix.target }}-cargo-
+            ${{ runner.os }}-cargo-
+
+      - name: Install Rust stable
         uses: dtolnay/rust-toolchain@stable
         with:
-          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+          targets: ${{ matrix.target }}
 
-      - name: install dependencies (ubuntu only)
-        if: runner.os == 'Linux' #
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.0-dev libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
-
-      - name: install frontend dependencies
-        run: yarn install --frozen-lockfile
-
-      - name: Build Frontend
-        run: yarn build:frontend
-
-      - name: Build Server Source
-        run: yarn build:server
+      - name: Install system dependencies (Linux)
+        if: runner.os == 'Linux'
+        uses: awalsh128/cache-apt-pkgs-action@latest
+        with:
+          packages: libwebkit2gtk-4.0-dev libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+          version: 1.0
 
       - name: Package Sidecar for Target
         run: yarn package:server ${{ matrix.target }}
 
-      - name: Patch updater endpoint to stable
+      - name: Patch updater endpoint
         run: |
           jq '.updater.endpoints = ["https://github.com/vital-proxies/proxy-tester/releases/latest/download/latest.json"]' \
             src-tauri/tauri.conf.json > tmp.json && mv tmp.json src-tauri/tauri.conf.json
 
-      - name: Get App Version from tauri.conf.json
-        id: get_version
-        shell: pwsh
-        run: |
-          VERSION=$(jq -r '.package.version' src-tauri/tauri.conf.json)
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-
       - name: Build Tauri App
-        if: ${{ !contains(steps.get_version.outputs.version, '-dev') }}
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -83,8 +141,8 @@ jobs:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
         with:
-          tagName: __VERSION__
-          releaseName: "__VERSION__"
+          tagName: ${{ needs.check-version.outputs.version }}
+          releaseName: "${{ needs.check-version.outputs.version }}"
           releaseBody: ""
           releaseDraft: true
           prerelease: false
