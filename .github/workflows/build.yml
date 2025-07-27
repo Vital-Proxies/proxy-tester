@@ -130,7 +130,7 @@ jobs:
         shell: bash
         run: |
           jq '.plugins.updater.endpoints = ["https://github.com/vital-proxies/proxy-tester/releases/latest/download/latest.json"]
-          | .bundle.targets = ["all"]' \
+          | .bundle.targets = "all"' \
           src-tauri/tauri.conf.json > tmp.json && mv tmp.json src-tauri/tauri.conf.json
 
       - name: Build Tauri App
