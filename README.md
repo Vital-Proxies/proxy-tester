@@ -54,13 +54,13 @@ _(Note: The version numbers in the filenames update with each new release. These
 
 | Platform       | Architecture    | File Type   | Download Link                                                                                                                 | Notes                         |
 | :------------- | :-------------- | :---------- | :---------------------------------------------------------------------------------------------------------------------------- | :---------------------------- |
-| 🪟 **Windows** | 64-bit (x64)    | `.exe`      | [**Download**](https://github.com/vital-proxies/proxy-tester/releases/download/1.0.0/Vital.Proxy.Tester_1.0.0_x64-setup.exe)  | Easiest option, auto-installs |
-| 🪟 **Windows** | 64-bit (x64)    | `.msi`      | [**Download**](https://github.com/vital-proxies/proxy-tester/releases/download/1.0.0/Vital.Proxy.Tester_1.0.0_x64_en-US.msi)  | Alternate installer           |
-| 🍎 **macOS**   | Apple Silicon   | `.dmg`      | [**Download**](https://github.com/vital-proxies/proxy-tester/releases/download/1.0.0/Vital.Proxy.Tester_1.0.0_aarch64.dmg)    | M1/M2/M3 Macs                 |
-| 🍎 **macOS**   | Intel           | `.dmg`      | [**Download**](https://github.com/vital-proxies/proxy-tester/releases/download/1.0.0/Vital.Proxy.Tester_1.0.0_x64.dmg)        | Most Intel Macs               |
-| 🐧 **Linux**   | Universal (x64) | `.AppImage` | [**Download**](https://github.com/vital-proxies/proxy-tester/releases/download/1.0.0/Vital.Proxy.Tester_1.0.0_amd64.AppImage) | Works on most modern distros  |
+| 🪟 **Windows** | 64-bit (x64)    | `.exe`      | [**Download**](https://github.com/vital-proxies/proxy-tester/releases/download/1.0.0/Vital.Proxy.Tester_1.1.0_x64-setup.exe)  | Easiest option, auto-installs |
+| 🪟 **Windows** | 64-bit (x64)    | `.msi`      | [**Download**](https://github.com/vital-proxies/proxy-tester/releases/download/1.0.0/Vital.Proxy.Tester_1.1.0_x64_en-US.msi)  | Alternate installer           |
+| 🍎 **macOS**   | Apple Silicon   | `.dmg`      | [**Download**](https://github.com/vital-proxies/proxy-tester/releases/download/1.0.0/Vital.Proxy.Tester_1.1.0_aarch64.dmg)    | M1/M2/M3 Macs                 |
+| 🍎 **macOS**   | Intel           | `.dmg`      | [**Download**](https://github.com/vital-proxies/proxy-tester/releases/download/1.0.0/Vital.Proxy.Tester_1.1.0_x64.dmg)        | Most Intel Macs               |
+| 🐧 **Linux**   | Universal (x64) | `.AppImage` | [**Download**](https://github.com/vital-proxies/proxy-tester/releases/download/1.0.0/Vital.Proxy.Tester_1.1.0_amd64.AppImage) | Works on most modern distros  |
 | 🐧 **Linux**   | Debian-based    | `.deb`      | [**Download**](https://github.com/vital-proxies/proxy-tester/releases/download/1.0.0/Vital.Proxy.Tester_1.0.0_amd64.deb)      | Ubuntu/Debian systems         |
-| 🐧 **Linux**   | RHEL-based      | `.rpm`      | [**Download**](https://github.com/vital-proxies/proxy-tester/releases/download/1.0.0/Vital.Proxy.Tester-1.0.0-1.x86_64.rpm)   | Fedora/RHEL/CentOS            |
+| 🐧 **Linux**   | RHEL-based      | `.rpm`      | [**Download**](https://github.com/vital-proxies/proxy-tester/releases/download/1.0.0/Vital.Proxy.Tester-1.1.0-1.x86_64.rpm)   | Fedora/RHEL/CentOS            |
 
 > **Important Note for macOS Users:**
 > The first time you run the app, you will need to **right-click** the application icon and select **"Open"** from the context menu. In the security prompt that appears, click **"Open"** again. You only need to do this once.
