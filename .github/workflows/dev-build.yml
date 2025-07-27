@@ -57,6 +57,12 @@ jobs:
       - name: Package Sidecar for Target
         run: yarn package:server ${{ matrix.target }}
 
+      - name: Get App Version
+        id: get_version
+        run: |
+          VERSION=$(jq -r '.version' src-tauri/tauri.conf.json)
+          echo "value=$VERSION" >> $GITHUB_OUTPUT
+
       - name: Build Tauri App (Dev)
         uses: tauri-apps/tauri-action@v0
         env:
@@ -76,3 +82,29 @@ jobs:
           releaseDraft: false
           prerelease: true
           args: --target ${{ matrix.target }}
+
+      - name: Rename artifacts to versionless names
+        run: |
+          cd src-tauri/target/release/bundle
+          [ -f dmg/Vital.Proxy.Tester_${{ steps.get_version.outputs.value }}_x64.dmg ] && mv dmg/Vital.Proxy.Tester_${{ steps.get_version.outputs.value }}_x64.dmg dmg/Vital.Proxy.Tester_x64.dmg
+          [ -f dmg/Vital.Proxy.Tester_${{ steps.get_version.outputs.value }}_aarch64.dmg ] && mv dmg/Vital.Proxy.Tester_${{ steps.get_version.outputs.value }}_aarch64.dmg dmg/Vital.Proxy.Tester_aarch64.dmg
+          [ -f deb/Vital.Proxy.Tester_${{ steps.get_version.outputs.value }}_amd64.deb ] && mv deb/Vital.Proxy.Tester_${{ steps.get_version.outputs.value }}_amd64.deb deb/Vital.Proxy.Tester_amd64.deb
+          [ -f appimage/Vital.Proxy.Tester_${{ steps.get_version.outputs.value }}_amd64.AppImage ] && mv appimage/Vital.Proxy.Tester_${{ steps.get_version.outputs.value }}_amd64.AppImage appimage/Vital.Proxy.Tester_amd64.AppImage
+          [ -f msi/Vital.Proxy.Tester_${{ steps.get_version.outputs.value }}_x64_en-US.msi ] && mv msi/Vital.Proxy.Tester_${{ steps.get_version.outputs.value }}_x64_en-US.msi msi/Vital.Proxy.Tester_x64_en-US.msi
+          [ -f nsis/Vital.Proxy.Tester_${{ steps.get_version.outputs.value }}_x64-setup.exe ] && mv nsis/Vital.Proxy.Tester_${{ steps.get_version.outputs.value }}_x64-setup.exe nsis/Vital.Proxy.Tester_x64-setup.exe
+
+      - name: Upload Renamed Artifacts
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: dev-latest
+          name: "Development Build (dev-latest)"
+          prerelease: true
+          files: |
+            src-tauri/target/release/bundle/**/*.dmg
+            src-tauri/target/release/bundle/**/*.AppImage
+            src-tauri/target/release/bundle/**/*.deb
+            src-tauri/target/release/bundle/**/*.rpm
+            src-tauri/target/release/bundle/**/*.exe
+            src-tauri/target/release/bundle/**/*.msi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
