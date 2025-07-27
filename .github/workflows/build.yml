@@ -1,9 +1,11 @@
-name: "Create Release on Tag Push"
+name: "Build and Release"
 
 on:
   push:
     tags:
       - "*.*.*"
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
@@ -54,6 +56,11 @@ jobs:
 
       - name: Package Sidecar for Target
         run: yarn package:server ${{ matrix.target }}
+
+      - name: Patch updater endpoint to stable
+        run: |
+          jq '.updater.endpoints = ["https://github.com/vital-proxies/proxy-tester/releases/latest/download/latest.json"]' \
+            src-tauri/tauri.conf.json > tmp.json && mv tmp.json src-tauri/tauri.conf.json
 
       - name: Build Tauri App
         uses: tauri-apps/tauri-action@v0
