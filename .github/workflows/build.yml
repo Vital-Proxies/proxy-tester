@@ -62,7 +62,15 @@ jobs:
           jq '.updater.endpoints = ["https://github.com/vital-proxies/proxy-tester/releases/latest/download/latest.json"]' \
             src-tauri/tauri.conf.json > tmp.json && mv tmp.json src-tauri/tauri.conf.json
 
+      - name: Get App Version from tauri.conf.json
+        id: get_version
+        shell: pwsh
+        run: |
+          VERSION=$(jq -r '.package.version' src-tauri/tauri.conf.json)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
       - name: Build Tauri App
+        if: ${{ !contains(steps.get_version.outputs.version, '-dev') }}
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
