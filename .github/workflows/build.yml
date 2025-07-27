@@ -126,15 +126,12 @@ jobs:
       - name: Package Sidecar for Target
         run: yarn package:server ${{ matrix.target }}
 
-      - name: Patch updater endpoint
+      - name: Patch Tauri config (updater endpoint + bundle targets)
+        shell: bash
         run: |
-          jq '.plugins.updater.endpoints = ["https://github.com/vital-proxies/proxy-tester/releases/latest/download/latest.json"]' \
-            src-tauri/tauri.conf.json > tmp.json && mv tmp.json src-tauri/tauri.conf.json
-
-      - name: Patch bundle targets
-        run: |
-          jq '.bundle.targets = "all"' \
-            src-tauri/tauri.conf.json > tmp.json && mv tmp.json src-tauri/tauri.conf.json
+          jq '.plugins.updater.endpoints = ["https://github.com/vital-proxies/proxy-tester/releases/latest/download/latest.json"]
+          | .bundle.targets = ["all"]' \
+          src-tauri/tauri.conf.json > tmp.json && mv tmp.json src-tauri/tauri.conf.json
 
       - name: Build Tauri App
         uses: tauri-apps/tauri-action@v0
