@@ -120,8 +120,8 @@ jobs:
           packages: libwebkit2gtk-4.0-dev libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
           version: 1.0
 
-      - name: Install pkg globally
-        run: npm install -g pkg
+      - name: Install packages
+        run: yarn install --frozen-lockfile --prefer-offline
 
       - name: Package Sidecar for Target
         run: yarn package:server ${{ matrix.target }}
