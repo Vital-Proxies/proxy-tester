@@ -18,7 +18,7 @@ jobs:
       - name: Get App Version
         id: get_version
         run: |
-          VERSION=$(jq -r '.package.version' src-tauri/tauri.conf.json)
+          VERSION=$(jq -r '.version' src-tauri/tauri.conf.json)
           echo "version=$VERSION" >> $GITHUB_OUTPUT
       - name: Check if should build
         id: check
