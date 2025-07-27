@@ -4,22 +4,28 @@ export enum ProxyFormat {
   UNKNOWN = "unknown",
 }
 
-export type ProxyStatus = "pending" | "testing" | "ok" | "fail";
+export type ProxyStatus = "ok" | "fail";
+
 export type TestStatus = "idle" | "testing" | "stopping" | "finished";
-export type ProxyStreamResult = Omit<Proxy, "status"> & {
-  status: "ok" | "fail";
-};
 
 export type Proxy = {
   raw: string;
   formatted: string;
   status: ProxyStatus;
+  protocol: ProxyProtocol;
   ip?: string;
   country?: string;
   countryCode?: string;
   isp?: string;
   city?: string;
   latency?: number;
+  errorDetails?: {
+    code?: string;
+    message: string;
+    statusCode?: number;
+    suggestion?: string;
+    protocolsTried?: ProxyProtocol[];
+  };
 };
 
 export type UpdateStatus =
@@ -43,3 +49,24 @@ export type ProxyTesterOptions = {
   ipLookup: boolean;
   latencyCheck: boolean;
 };
+
+export type ProxyProtocol = "http" | "https" | "socks4" | "socks5" | "unknown";
+
+export interface NormalizedProxy {
+  formatted: string;
+  protocol: ProxyProtocol;
+}
+
+export interface ProxyResult {
+  raw: string;
+  formatted: string;
+  status: ProxyStatus;
+  protocol: ProxyProtocol;
+  // Optional fields
+  latency?: number;
+  ip?: string;
+  country?: string;
+  countryCode?: string;
+  isp?: string;
+  city?: string;
+}

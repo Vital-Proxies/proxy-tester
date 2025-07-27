@@ -1,6 +1,6 @@
 {
   "name": "vital-proxy-tester",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "author": "Expensiveee <expensiveee@vital-proxies.com>",
   "license": "MIT",
@@ -45,6 +45,7 @@
     "node-fetch": "^3.3.2",
     "react": "19.1.0",
     "react-dom": "19.1.0",
+    "socks-proxy-agent": "^8.0.5",
     "tailwind-merge": "^3.3.1",
     "zustand": "^5.0.6"
   },

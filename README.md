@@ -36,9 +36,10 @@ No more slow or clunky testing tools. Get instant feedback with a detailed, real
 ### Key Features
 
 - 🚀 **High-Performance Testing:** Asynchronously tests proxies with a configurable concurrency limit to get results fast.
-- 🌍 **Comprehensive Data:** For each successful proxy, view Status, Latency (TTFB), IP Address, Country, City, and ISP.
+- 📡 **Multi-Protocol Support:** Automatically detects and tests for HTTP, HTTPS, SOCKS4, and SOCKS5 protocols to correctly validate any type of proxy.
+- 🌍 **Geo-IP Data:** For each successful proxy, view Status, Latency (TTFB), IP Address, Country, City, and ISP.
 - ✨ **Smart & Interactive UI:**
-  - **Auto-Parsing:** Paste your list in almost any common format (`host:port:user:pass`, `user:pass@host:port`, etc.).
+  - **Auto-Parsing:** Paste your list in almost any common format (`host:port:user:pass`, `user:pass@host:port`, etc.) and the app handles it.
   - **Easy Actions:** Copy proxy strings/IPs, view detailed breakdowns, and manage your results with a single click.
 - 🔄 **Automatic Updates:** The app notifies you when a new version is available, so you're always up-to-date.
 - 💻 **Cross-Platform:** Works seamlessly on macOS, Windows, and Linux.

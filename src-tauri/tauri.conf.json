@@ -1,7 +1,7 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
   "productName": "Vital Proxy Tester",
-  "version": "1.0.0",
+  "version": "1.0.1-dev",
   "identifier": "com.vital-proxies.tester",
   "build": {
     "frontendDist": "../out",
@@ -33,7 +33,7 @@
     "createUpdaterArtifacts": true,
     "externalBin": ["bin/server"],
     "active": true,
-    "targets": "all",
+    "targets": ["appimage", "dmg", "nsis", "app", "deb", "rpm"],
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
@@ -48,7 +48,7 @@
       "dialog": false,
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDUzQTlDRkJGN0NGMTY5QjQKUldTMGFmRjh2OCtwVTZ6ZDB5WjV4cHAxeEN0TlhGQXBEa2ZkL01aMUtrR2dNSWNxKy9ONmR5ZlcK",
       "endpoints": [
-        "https://github.com/vital-proxies/proxy-tester/releases/latest/download/latest.json"
+        "https://github.com/vital-proxies/proxy-tester/releases/download/dev-latest/latest.json"
       ]
     }
   }
