@@ -4,7 +4,7 @@ import { useEffect, useRef, useCallback } from "react";
 import { Command, Child } from "@tauri-apps/plugin-shell";
 import { isTauri } from "@tauri-apps/api/core";
 
-const API_PORT = 3001;
+const API_PORT = 3002;
 const API_URL = `http://localhost:${API_PORT}`;
 
 export function useApi() {

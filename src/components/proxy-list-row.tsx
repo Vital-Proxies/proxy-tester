@@ -24,17 +24,24 @@ import {
 import { AlertDialogTrigger } from "@radix-ui/react-alert-dialog";
 import { useProxyTesterStore } from "@/store/proxy";
 import useCopyToClipboard from "@/hooks/useCopyToClipboard";
+import dynamic from "next/dynamic";
+
+const ProModeMetrics = dynamic(() => import("./pro-mode-metrics"), {
+  loading: () => <div className="text-sm text-gray-400">Loading metrics...</div>
+});
 
 type ProxyListRowProps = {
   proxy: Proxy;
   latencyCheck: boolean;
   ipLookup: boolean;
+  proMode?: boolean;
 };
 
 export default function ProxyListRow({
   proxy,
   latencyCheck,
   ipLookup,
+  proMode = false,
 }: ProxyListRowProps) {
   const { removeTestedProxy } = useProxyTesterStore();
   const [isProxyCopied, copyProxy] = useCopyToClipboard();
@@ -98,27 +105,25 @@ export default function ProxyListRow({
           <Tooltip>
             <TooltipTrigger asChild>
               <div className="flex h-full w-full cursor-pointer items-center justify-start">
-                <span className="truncate">{proxy.formatted}</span>
+                <span className="truncate">{String(proxy.formatted || proxy.raw || '')}</span>
               </div>
             </TooltipTrigger>
             <TooltipContent>
-              <div className="max-w-xs break-all font-mono">{proxy.raw}</div>
+              <div className="max-w-xs break-all font-mono">{String(proxy.raw || '')}</div>
             </TooltipContent>
           </Tooltip>
         </TableCell>
 
-        {proxy.protocol && (
-          <TableCell className="text-sm">
-            <div
-              className={cn(
-                "mx-auto w-fit rounded-md px-2 py-0.5 font-semibold tracking-wider",
-                currentProtocol.className
-              )}
-            >
-              {currentProtocol.label}
-            </div>
-          </TableCell>
-        )}
+        <TableCell className="text-sm">
+          <div
+            className={cn(
+              "mx-auto w-fit rounded-md px-2 py-0.5 font-semibold tracking-wider",
+              currentProtocol.className
+            )}
+          >
+            {currentProtocol.label}
+          </div>
+        </TableCell>
 
         <TableCell>
           <div
@@ -137,6 +142,75 @@ export default function ProxyListRow({
           </TableCell>
         )}
 
+        {proMode && (
+          <>
+            <TableCell className="font-mono text-sm">
+              {proxy.proModeResult?.firstConnectionTime != null ? (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span className="cursor-help text-blue-400">
+                      {Math.round(proxy.proModeResult.firstConnectionTime)}ms
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>First connection time</p>
+                  </TooltipContent>
+                </Tooltip>
+              ) : "—"}
+            </TableCell>
+            <TableCell className="font-mono text-sm">
+              {proxy.proModeResult?.subsequentConnectionTime != null ? (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="cursor-help text-green-400 flex items-center gap-1">
+                      <span>{Math.round(proxy.proModeResult.subsequentConnectionTime)}ms</span>
+                      {proxy.proModeResult.connections?.some(c => c.sessionReused) && (
+                        <span className="text-xs text-green-500">♻️</span>
+                      )}
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Average subsequent connection time (session reused)</p>
+                    {proxy.proModeResult.firstConnectionTime > 0 && (
+                      <p className="text-xs text-green-400 mt-1">
+                        {((1 - proxy.proModeResult.subsequentConnectionTime / proxy.proModeResult.firstConnectionTime) * 100).toFixed(1)}% faster
+                      </p>
+                    )}
+                  </TooltipContent>
+                </Tooltip>
+              ) : "—"}
+            </TableCell>
+            <TableCell className="font-mono text-sm">
+              {proxy.proModeResult?.averageMetrics?.dnsLookupTime != null ? (
+                <span className="text-purple-400">
+                  {proxy.proModeResult.averageMetrics.dnsLookupTime.toFixed(1)}
+                </span>
+              ) : "—"}
+            </TableCell>
+            <TableCell className="font-mono text-sm">
+              {proxy.proModeResult?.averageMetrics?.tcpConnectTime != null ? (
+                <span className="text-orange-400">
+                  {proxy.proModeResult.averageMetrics.tcpConnectTime.toFixed(1)}
+                </span>
+              ) : "—"}
+            </TableCell>
+            <TableCell className="font-mono text-sm">
+              {proxy.proModeResult?.averageMetrics?.tlsHandshakeTime != null ? (
+                <span className="text-cyan-400">
+                  {proxy.proModeResult.averageMetrics.tlsHandshakeTime.toFixed(1)}
+                </span>
+              ) : "—"}
+            </TableCell>
+            <TableCell className="font-mono text-sm">
+              {proxy.proModeResult?.connections?.length != null ? (
+                <span className="text-indigo-400">
+                  {proxy.proModeResult.connections.length}
+                </span>
+              ) : "—"}
+            </TableCell>
+          </>
+        )}
+
         {ipLookup && (
           <TableCell>
             {proxy.ip && proxy.countryCode ? (
@@ -146,7 +220,7 @@ export default function ProxyListRow({
                 </span>
                 <div className="flex flex-col">
                   <span className="text-sm font-medium text-secondary-foreground">
-                    {proxy.country ?? "Unknown"}
+                    {String(proxy.country ?? "Unknown")}
                   </span>
 
                   <Tooltip>
@@ -155,7 +229,7 @@ export default function ProxyListRow({
                         onClick={() => copyIp(proxy.ip!)}
                         className="flex items-center gap-1.5 text-left font-mono text-xs text-muted-foreground hover:text-foreground"
                       >
-                        {proxy.ip}
+                        {String(proxy.ip || '')}
                         {isIpCopied ? (
                           <Check className="size-3 text-green-500" />
                         ) : (
@@ -256,10 +330,10 @@ export default function ProxyListRow({
                 </div>
 
                 <div className="font-medium text-muted-foreground">Country</div>
-                <div>{proxy.country ?? "—"}</div>
+                <div>{String(proxy.country ?? "—")}</div>
 
                 <div className="font-medium text-muted-foreground">City</div>
-                <div>{proxy.city ?? "—"}</div>
+                <div>{String(proxy.city ?? "—")}</div>
 
                 <div className="font-medium text-muted-foreground">ISP</div>
                 <div>{proxy.isp ?? "—"}</div>
@@ -268,6 +342,17 @@ export default function ProxyListRow({
                   IP Address
                 </div>
                 <div className="font-mono">{proxy.ip ?? "—"}</div>
+
+                {proxy.proModeResult && (
+                  <>
+                    <div className="col-span-2 mt-2 pt-3 font-medium text-muted-foreground border-t">
+                      Pro Mode Metrics
+                    </div>
+                    <div className="col-span-2">
+                      <ProModeMetrics result={proxy.proModeResult} />
+                    </div>
+                  </>
+                )}
 
                 <div className="col-span-2 mt-2 pt-3 font-medium text-muted-foreground border-t">
                   Raw String

@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { check, Update } from "@tauri-apps/plugin-updater";
 import { relaunch } from "@tauri-apps/plugin-process";
+import { isTauri } from "@tauri-apps/api/core";
 import { UpdateStatus } from "@/types";
 
 export function useUpdater() {
@@ -15,6 +16,12 @@ export function useUpdater() {
   const isUpdateAvailable = !!update;
 
   useEffect(() => {
+    // Only run in Tauri environment
+    if (!isTauri()) {
+      console.log("Web environment detected. Update checking disabled.");
+      return;
+    }
+
     const doCheckUpdate = async () => {
       try {
         const result = await check();

@@ -1,11 +1,11 @@
 "use client";
 
 import { useProxyTesterStore } from "@/store/proxy";
-import { ProxyResult } from "@/types";
+import { ProxyResult, ProModeTestResult } from "@/types";
 import { Button } from "@/components/ui/button";
 import { CheckCircle, Loader2, X, Zap } from "lucide-react";
 import { useApi } from "@/hooks/useApiUrl";
-import { fetch } from "@tauri-apps/plugin-http";
+import { isTauri } from "@tauri-apps/api/core";
 
 export default function ProxyToolbar() {
   const { getUrl } = useApi();
@@ -30,12 +30,20 @@ export default function ProxyToolbar() {
     prepareForTest(controller);
 
     try {
-      const response = await fetch(getUrl("/api/proxy-check"), {
+      // Use appropriate fetch based on environment
+      const fetchFunction = isTauri() 
+        ? (await import("@tauri-apps/plugin-http")).fetch 
+        : globalThis.fetch;
+      
+      // Choose endpoint based on Pro Mode
+      const endpoint = options.proMode ? "/api/test-proxies-pro-batch" : "/api/proxy-check";
+      
+      const response = await fetchFunction(getUrl(endpoint), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         signal: controller.signal,
         body: JSON.stringify({
-          proxies: loadedProxies,
+          proxies: loadedProxies.map(p => p.raw || p.formatted),
           options: { ...options },
         }),
       });
@@ -54,14 +62,47 @@ export default function ProxyToolbar() {
         const lines = value.split("\n\n").filter(Boolean);
         for (const line of lines) {
           if (line.startsWith("data: ")) {
-            const result: ProxyResult = JSON.parse(line.substring(6));
-            addTestResult({
-              ...result,
-              raw: result.raw,
-              formatted: result.formatted,
-              protocol: result.protocol,
-              status: result.status,
-            });
+            if (options.proMode) {
+              // Handle Pro Mode result
+              const proResult: ProModeTestResult = JSON.parse(line.substring(6));
+              console.log('Pro Mode Result:', proResult); // Debug log
+              
+              // Ensure we have a valid proxy string
+              const proxyString = proResult.proxy || 'Unknown Proxy';
+              
+              addTestResult({
+                raw: String(proxyString),
+                formatted: String(proxyString),
+                protocol: proResult.protocol || 'unknown',
+                status: proResult.status || 'fail',
+                ip: proResult.exitIp,
+                country: proResult.geolocation?.country,
+                countryCode: proResult.geolocation?.countryCode,
+                isp: proResult.geolocation?.isp,
+                city: proResult.geolocation?.city,
+                latency: proResult.firstConnectionTime,
+                proModeResult: proResult,
+                detailedMetrics: proResult.averageMetrics,
+                connectionsCount: proResult.connections?.length || 0,
+                errorDetails: proResult.errorDetails,
+              });
+            } else {
+              // Handle normal result
+              const result: ProxyResult = JSON.parse(line.substring(6));
+              console.log('Normal Result:', result); // Debug log
+              
+              // Ensure we have valid proxy strings
+              const rawProxy = result.raw || 'Unknown Proxy';
+              const formattedProxy = result.formatted || rawProxy;
+              
+              addTestResult({
+                ...result,
+                raw: String(rawProxy),
+                formatted: String(formattedProxy),
+                protocol: result.protocol || 'unknown',
+                status: result.status || 'fail',
+              });
+            }
           }
         }
       }

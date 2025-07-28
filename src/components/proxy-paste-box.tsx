@@ -28,13 +28,15 @@ export default function ProxyPasteBox() {
         .map((raw, index) => {
           const normalizedProxy = normalizeProxy(raw);
           if (!normalizedProxy) return null;
-          return {
-            position: index,
-            raw,
+          
+          const proxy: Proxy = {
+            raw: raw,
             protocol: normalizedProxy.protocol,
             formatted: normalizedProxy.formatted,
-            status: "ok",
-          } as Proxy;
+            status: "ok" as const,
+          };
+          
+          return proxy;
         })
         .filter((p): p is Proxy => p !== null);
 

@@ -2,6 +2,7 @@ import ProxyList from "@/components/proxy-list";
 import ProxyOptions from "@/components/proxy-options";
 import ProxyPasteBox from "@/components/proxy-paste-box";
 import ProxyToolbar from "@/components/proxy-toolbar";
+import ProMode from "@/components/pro-mode";
 import { BarChart2, Cog, Wand2 } from "lucide-react";
 
 export default function Home() {
@@ -49,6 +50,9 @@ export default function Home() {
               <ProxyOptions />
             </div>
           </div>
+          
+          {/* Pro Mode Panel */}
+          <ProMode />
         </div>
       </div>
     </div>

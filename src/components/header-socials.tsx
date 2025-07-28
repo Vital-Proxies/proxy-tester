@@ -1,6 +1,7 @@
 "use client";
 
 import { openUrl } from "@tauri-apps/plugin-opener";
+import { isTauri } from "@tauri-apps/api/core";
 import Image from "next/image";
 import { Button } from "./ui/button";
 import { Globe, Github } from "lucide-react";
@@ -40,7 +41,12 @@ const socialLinks = [
 
 export default function HeaderSocials() {
   const handleOpenUrl = (url: string) => {
-    openUrl(url).catch(console.error);
+    if (isTauri()) {
+      openUrl(url).catch(console.error);
+    } else {
+      // In web environment, use window.open
+      window.open(url, '_blank');
+    }
   };
 
   return (

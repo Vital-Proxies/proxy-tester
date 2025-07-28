@@ -3,12 +3,37 @@
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { openUrl } from "@tauri-apps/plugin-opener";
-import { ArrowRight } from "lucide-react";
+import { isTauri } from "@tauri-apps/api/core";
+import { ArrowRight, Zap } from "lucide-react";
 import HeaderSocials from "./header-socials";
+import { useProxyTesterStore } from "@/store/proxy";
 
 export default function Header() {
+  const { options, setOptions } = useProxyTesterStore();
+  const isProMode = options.proMode || false;
+
   const handleOpenUrl = (url: string) => {
-    openUrl(url).catch(console.error);
+    if (isTauri()) {
+      openUrl(url).catch(console.error);
+    } else {
+      window.open(url, '_blank');
+    }
+  };
+
+  const toggleProMode = () => {
+    setOptions({
+      ...options,
+      proMode: !isProMode,
+      // Set pro mode defaults when enabling
+      ...((!isProMode) && {
+        connectionsPerProxy: 3,
+        testAllConnections: true,
+        detailedMetrics: true,
+        connectionPooling: true,
+        testMethod: 'advanced',
+        retryCount: 1,
+      })
+    });
   };
 
   return (
@@ -32,6 +57,28 @@ export default function Header() {
 
       <div className="flex items-center gap-4">
         <HeaderSocials />
+
+        {/* Pro Mode Toggle Button */}
+        <Button
+          onClick={toggleProMode}
+          className={`group relative inline-flex h-9 items-center justify-center overflow-hidden rounded-md px-4 font-medium transition-all duration-300 ${
+            isProMode 
+              ? 'bg-purple-600 text-white hover:bg-purple-700 shadow-lg shadow-purple-500/25' 
+              : 'bg-gray-600 text-gray-200 hover:bg-gray-500'
+          }`}
+        >
+          <span className="flex items-center">
+            <Zap className={`mr-2 size-4 transition-all duration-300 ${
+              isProMode ? 'text-yellow-300' : 'text-gray-400'
+            }`} />
+            Pro Mode
+            {isProMode && (
+              <span className="ml-2 inline-flex items-center rounded-full bg-yellow-400 px-1.5 py-0.5 text-xs font-medium text-purple-900">
+                ON
+              </span>
+            )}
+          </span>
+        </Button>
 
         <Button
           className="group relative inline-flex h-9 items-center justify-center overflow-hidden rounded-md bg-accent px-4 font-medium text-neutral-50 transition-all duration-300 hover:bg-accent/90"
