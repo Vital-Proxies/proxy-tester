@@ -58,7 +58,6 @@ export type ProxyTesterOptions = {
   testAllConnections?: boolean;
   detailedMetrics?: boolean;
   connectionPooling?: boolean;
-  testMethod?: 'fetch' | 'advanced' | 'all';
   retryCount?: number;
   customTimeout?: number;
 };
@@ -86,7 +85,6 @@ export interface ProModeTestResult {
   proxy: string;
   status: ProxyStatus;
   protocol: ProxyProtocol;
-  testMethod: string;
   connections: DetailedLatencyMetrics[];
   averageMetrics: DetailedLatencyMetrics;
   firstConnectionTime: number;

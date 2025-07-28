@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { ProModeTestResult, DetailedLatencyMetrics } from "@/types";
+import { ProModeTestResult } from "@/types";
 import {
   Tooltip,
   TooltipContent,
@@ -38,11 +38,11 @@ export default function ProModeMetrics({ result, compact = false }: ProModeMetri
       description: "Time to resolve domain name to IP address"
     },
     {
-      label: "TCP Connect",
+      label: "TCP Connect (Proxy Latency)",
       value: averageMetrics.tcpConnectTime,
       icon: Wifi,
       color: "green",
-      description: "Time to establish TCP connection"
+      description: "Direct latency to proxy server - Time to establish TCP connection"
     },
     {
       label: "TLS Handshake",
@@ -130,15 +130,83 @@ export default function ProModeMetrics({ result, compact = false }: ProModeMetri
   return (
     <TooltipProvider>
       <div className="space-y-4">
-        {/* Timeline Visualization */}
+        {/* Latency Breakdown Bar */}
         <div className="bg-gray-900/50 rounded-lg p-4 border border-gray-700">
           <h4 className="text-sm font-semibold mb-3 text-gray-200 flex items-center gap-2">
             <Activity size={16} />
-            Connection Timeline
+            Latency Breakdown
+          </h4>
+          <div className="mb-4">
+            <div className="relative h-8 bg-gray-800 rounded-lg overflow-hidden">
+              {(() => {
+                const total = averageMetrics.totalTime;
+                let currentPosition = 0;
+                
+                const segments = [
+                  { label: "DNS", value: averageMetrics.dnsLookupTime, color: "bg-purple-500" },
+                  { label: "TCP (Proxy)", value: averageMetrics.tcpConnectTime, color: "bg-orange-500" },
+                  { label: "Proxy Auth", value: averageMetrics.proxyAuthTime + averageMetrics.proxyConnectTime, color: "bg-indigo-500" },
+                  { label: "TLS", value: averageMetrics.tlsHandshakeTime, color: "bg-cyan-500" },
+                  { label: "Request", value: averageMetrics.requestSendTime, color: "bg-blue-500" },
+                  { label: "Response", value: averageMetrics.responseWaitTime + averageMetrics.responseDownloadTime, color: "bg-green-500" }
+                ];
+                
+                return segments.map((segment) => {
+                  const width = (segment.value / total) * 100;
+                  const left = currentPosition;
+                  currentPosition += width;
+                  
+                  return (
+                    <Tooltip key={segment.label}>
+                      <TooltipTrigger asChild>
+                        <div
+                          className={`absolute h-full ${segment.color} hover:opacity-80 transition-opacity cursor-pointer`}
+                          style={{ left: `${left}%`, width: `${width}%` }}
+                        />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <div>
+                          <p className="font-semibold">{segment.label}</p>
+                          <p className="text-sm">{segment.value.toFixed(1)}ms ({width.toFixed(1)}%)</p>
+                        </div>
+                      </TooltipContent>
+                    </Tooltip>
+                  );
+                });
+              })()}
+            </div>
+            <div className="flex justify-between mt-2 text-xs text-gray-400">
+              <span>0ms</span>
+              <span className="font-mono font-semibold text-white">{averageMetrics.totalTime.toFixed(1)}ms total</span>
+            </div>
+          </div>
+          
+          {/* Metric Cards */}
+          <div className="grid grid-cols-2 gap-2">
+            {metricItems.map((item) => (
+              <div key={item.label} className={cn(
+                "flex items-center justify-between p-2 rounded-lg border",
+                colorClasses[item.color as keyof typeof colorClasses]
+              )}>
+                <div className="flex items-center gap-2">
+                  <item.icon size={14} />
+                  <span className="text-xs">{item.label}</span>
+                </div>
+                <span className="text-xs font-mono font-semibold">{item.value.toFixed(1)}ms</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Timeline Visualization */}
+        <div className="bg-gray-900/50 rounded-lg p-4 border border-gray-700">
+          <h4 className="text-sm font-semibold mb-3 text-gray-200 flex items-center gap-2">
+            <Clock size={16} />
+            Detailed Timeline
           </h4>
           <div className="relative">
             <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-gray-600"></div>
-            {metricItems.map((item, index) => {
+            {metricItems.map((item) => {
               const percentage = (item.value / averageMetrics.totalTime) * 100;
               return (
                 <Tooltip key={item.label}>

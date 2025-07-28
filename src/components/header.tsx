@@ -57,42 +57,6 @@ export default function Header() {
 
       <div className="flex items-center gap-4">
         <HeaderSocials />
-
-        {/* Pro Mode Toggle Button */}
-        <Button
-          onClick={toggleProMode}
-          className={`group relative inline-flex h-9 items-center justify-center overflow-hidden rounded-md px-4 font-medium transition-all duration-300 ${
-            isProMode 
-              ? 'bg-purple-600 text-white hover:bg-purple-700 shadow-lg shadow-purple-500/25' 
-              : 'bg-gray-600 text-gray-200 hover:bg-gray-500'
-          }`}
-        >
-          <span className="flex items-center">
-            <Zap className={`mr-2 size-4 transition-all duration-300 ${
-              isProMode ? 'text-yellow-300' : 'text-gray-400'
-            }`} />
-            Pro Mode
-            {isProMode && (
-              <span className="ml-2 inline-flex items-center rounded-full bg-yellow-400 px-1.5 py-0.5 text-xs font-medium text-purple-900">
-                ON
-              </span>
-            )}
-          </span>
-        </Button>
-
-        <Button
-          className="group relative inline-flex h-9 items-center justify-center overflow-hidden rounded-md bg-accent px-4 font-medium text-neutral-50 transition-all duration-300 hover:bg-accent/90"
-          onClick={() =>
-            handleOpenUrl(
-              "https://www.vital-proxies.com/?utm_source=vital-tester&utm_medium=app&utm_campaign=buy-proxies"
-            )
-          }
-        >
-          <span className="flex items-center">
-            Try Vital For Free
-            <ArrowRight className="ml-2 size-4 transition-transform duration-300 group-hover:translate-x-1" />
-          </span>
-        </Button>
       </div>
     </header>
   );

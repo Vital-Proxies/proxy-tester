@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { CheckCircle, Loader2, X, Zap } from "lucide-react";
 import { useApi } from "@/hooks/useApiUrl";
 import { isTauri } from "@tauri-apps/api/core";
+import ProModeStats from "./pro-mode-stats";
 
 export default function ProxyToolbar() {
   const { getUrl } = useApi();
@@ -43,7 +44,9 @@ export default function ProxyToolbar() {
         headers: { "Content-Type": "application/json" },
         signal: controller.signal,
         body: JSON.stringify({
-          proxies: loadedProxies.map(p => p.raw || p.formatted),
+          proxies: options.proMode 
+            ? loadedProxies.map(p => p.raw || p.formatted) // Pro Mode expects strings
+            : loadedProxies, // Normal mode expects Proxy objects
           options: { ...options },
         }),
       });
@@ -121,6 +124,7 @@ export default function ProxyToolbar() {
 
   return (
     <div className="z-20 transition-all duration-200 ease-in-out text-text-secondary py-6">
+      <ProModeStats />
       <div className="w-full flex items-center justify-between px-1 py-2">
         <div className="flex min-w-[250px] items-center gap-2 text-sm ">
           {testStatus === "testing" && (

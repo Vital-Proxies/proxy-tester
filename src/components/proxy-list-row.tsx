@@ -25,6 +25,7 @@ import { AlertDialogTrigger } from "@radix-ui/react-alert-dialog";
 import { useProxyTesterStore } from "@/store/proxy";
 import useCopyToClipboard from "@/hooks/useCopyToClipboard";
 import dynamic from "next/dynamic";
+import { ProModeColumns } from "./proxy-list-row-promode";
 
 const ProModeMetrics = dynamic(() => import("./pro-mode-metrics"), {
   loading: () => <div className="text-sm text-gray-400">Loading metrics...</div>
@@ -101,11 +102,11 @@ export default function ProxyListRow({
         transition={{ duration: 0.3 }}
         className="border-b"
       >
-        <TableCell className="w-[240px] max-w-[240px] truncate font-mono text-sm">
+        <TableCell className="font-mono text-sm max-w-[200px]">
           <Tooltip>
             <TooltipTrigger asChild>
               <div className="flex h-full w-full cursor-pointer items-center justify-start">
-                <span className="truncate">{String(proxy.formatted || proxy.raw || '')}</span>
+                <span className="truncate block">{String(proxy.formatted || proxy.raw || '')}</span>
               </div>
             </TooltipTrigger>
             <TooltipContent>
@@ -126,90 +127,42 @@ export default function ProxyListRow({
         </TableCell>
 
         <TableCell>
-          <div
-            className={cn(
-              "flex items-center justify-center gap-2 text-center px-2.5 rounded-lg py-1 text-xs font-semibold border",
-              currentStatus.className
-            )}
-          >
-            <span className="capitalize">{currentStatus.label}</span>
-          </div>
+          {proxy.status === "fail" && proxy.errorDetails ? (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div
+                  className={cn(
+                    "flex items-center justify-center gap-2 text-center px-2.5 rounded-lg py-1 text-xs font-semibold border cursor-help",
+                    currentStatus.className
+                  )}
+                >
+                  <span className="capitalize">{currentStatus.label}</span>
+                </div>
+              </TooltipTrigger>
+              <TooltipContent className="max-w-xs">
+                <p className="font-semibold">Connection Failed</p>
+                <p className="text-xs text-gray-400 mt-1">{proxy.errorDetails.message}</p>
+                {proxy.errorDetails.protocolsTried && proxy.errorDetails.protocolsTried.length > 1 && (
+                  <p className="text-xs text-gray-500 mt-2">
+                    Protocols tried: {proxy.errorDetails.protocolsTried.join(", ")}
+                  </p>
+                )}
+              </TooltipContent>
+            </Tooltip>
+          ) : (
+            <div
+              className={cn(
+                "flex items-center justify-center gap-2 text-center px-2.5 rounded-lg py-1 text-xs font-semibold border",
+                currentStatus.className
+              )}
+            >
+              <span className="capitalize">{currentStatus.label}</span>
+            </div>
+          )}
         </TableCell>
 
-        {latencyCheck && (
-          <TableCell className="font-mono text-sm">
-            {proxy.latency != null ? `${proxy.latency}ms` : "—"}
-          </TableCell>
-        )}
 
-        {proMode && (
-          <>
-            <TableCell className="font-mono text-sm">
-              {proxy.proModeResult?.firstConnectionTime != null ? (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <span className="cursor-help text-blue-400">
-                      {Math.round(proxy.proModeResult.firstConnectionTime)}ms
-                    </span>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>First connection time</p>
-                  </TooltipContent>
-                </Tooltip>
-              ) : "—"}
-            </TableCell>
-            <TableCell className="font-mono text-sm">
-              {proxy.proModeResult?.subsequentConnectionTime != null ? (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className="cursor-help text-green-400 flex items-center gap-1">
-                      <span>{Math.round(proxy.proModeResult.subsequentConnectionTime)}ms</span>
-                      {proxy.proModeResult.connections?.some(c => c.sessionReused) && (
-                        <span className="text-xs text-green-500">♻️</span>
-                      )}
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Average subsequent connection time (session reused)</p>
-                    {proxy.proModeResult.firstConnectionTime > 0 && (
-                      <p className="text-xs text-green-400 mt-1">
-                        {((1 - proxy.proModeResult.subsequentConnectionTime / proxy.proModeResult.firstConnectionTime) * 100).toFixed(1)}% faster
-                      </p>
-                    )}
-                  </TooltipContent>
-                </Tooltip>
-              ) : "—"}
-            </TableCell>
-            <TableCell className="font-mono text-sm">
-              {proxy.proModeResult?.averageMetrics?.dnsLookupTime != null ? (
-                <span className="text-purple-400">
-                  {proxy.proModeResult.averageMetrics.dnsLookupTime.toFixed(1)}
-                </span>
-              ) : "—"}
-            </TableCell>
-            <TableCell className="font-mono text-sm">
-              {proxy.proModeResult?.averageMetrics?.tcpConnectTime != null ? (
-                <span className="text-orange-400">
-                  {proxy.proModeResult.averageMetrics.tcpConnectTime.toFixed(1)}
-                </span>
-              ) : "—"}
-            </TableCell>
-            <TableCell className="font-mono text-sm">
-              {proxy.proModeResult?.averageMetrics?.tlsHandshakeTime != null ? (
-                <span className="text-cyan-400">
-                  {proxy.proModeResult.averageMetrics.tlsHandshakeTime.toFixed(1)}
-                </span>
-              ) : "—"}
-            </TableCell>
-            <TableCell className="font-mono text-sm">
-              {proxy.proModeResult?.connections?.length != null ? (
-                <span className="text-indigo-400">
-                  {proxy.proModeResult.connections.length}
-                </span>
-              ) : "—"}
-            </TableCell>
-          </>
-        )}
+        {proMode && <ProModeColumns proxy={proxy} />}
 
         {ipLookup && (
           <TableCell>

@@ -1,11 +1,10 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useProxyTesterStore } from "@/store/proxy";
 import { useProMode } from "@/hooks/useProMode";
 import { Button } from "./ui/button";
 import { Switch } from "./ui/switch";
-import { Input } from "./ui/input";
 import {
   Tooltip,
   TooltipContent,
@@ -32,8 +31,7 @@ export default function ProMode() {
   const { 
     getProModeStats, 
     exportProModeResults,
-    proModeResults,
-    isProModeTesting 
+    proModeResults
   } = useProMode();
 
   const toggleProMode = (enabled: boolean) => {
@@ -46,12 +44,11 @@ export default function ProMode() {
       testAllConnections: enabled ? true : false, // Always test all in Pro Mode
       detailedMetrics: enabled,
       connectionPooling: enabled ? true : false, // Always use pooling in Pro Mode
-      testMethod: enabled ? 'advanced' : 'fetch',
       retryCount: enabled ? 1 : 0,
     });
   };
 
-  const updateProModeOption = (key: string, value: any) => {
+  const updateProModeOption = (key: string, value: boolean | number) => {
     setOptions({
       ...options,
       [key]: value,
@@ -167,25 +164,6 @@ export default function ProMode() {
                     </TooltipContent>
                   </Tooltip>
 
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm text-gray-300">Test method</span>
-                        <select
-                          value={options.testMethod || 'fetch'}
-                          onChange={(e) => updateProModeOption('testMethod', e.target.value)}
-                          className="text-sm border border-gray-600 rounded px-3 py-1 bg-gray-800 text-gray-200"
-                        >
-                          <option value="fetch">Standard</option>
-                          <option value="advanced">Advanced</option>
-                          <option value="all">All Methods</option>
-                        </select>
-                      </div>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Choose testing method for different levels of detail</p>
-                    </TooltipContent>
-                  </Tooltip>
 
                   <Tooltip>
                     <TooltipTrigger asChild>

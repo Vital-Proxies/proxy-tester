@@ -134,7 +134,7 @@ export const useProMode = () => {
       result.geolocation?.country || '',
       result.geolocation?.city || '',
       result.geolocation?.isp || '',
-      result.testMethod,
+      'Low-Level',
       result.connections.length,
       Math.round(result.firstConnectionTime),
       Math.round(result.subsequentConnectionTime || result.firstConnectionTime),
@@ -176,7 +176,6 @@ export const useProMode = () => {
       testAllConnections: options.testAllConnections || false,
       detailedMetrics: options.detailedMetrics || false,
       connectionPooling: options.connectionPooling || false,
-      testMethod: options.testMethod || 'fetch',
       retryCount: options.retryCount || 0,
     }
   };

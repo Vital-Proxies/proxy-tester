@@ -13,12 +13,26 @@ async function checkProxy(
   proxy: Proxy,
   options: ProxyTesterOptions
 ): Promise<ProxyResult> {
+  // Validate proxy data
+  if (!proxy || !proxy.formatted) {
+    console.error('Invalid proxy data:', proxy);
+    return {
+      raw: proxy?.raw || 'Invalid proxy',
+      formatted: proxy?.formatted || 'Invalid proxy',
+      protocol: 'unknown',
+      status: 'fail',
+      errorDetails: {
+        message: 'Invalid proxy format',
+      },
+    };
+  }
+
   const controller = new AbortController();
   const protocolsTried: ProxyProtocol[] = [];
 
   try {
     // If protocol is known, test only that protocol
-    if (proxy.protocol !== "unknown") {
+    if (proxy.protocol && proxy.protocol !== "unknown") {
       protocolsTried.push(proxy.protocol);
       const result = await testProxyWithProtocol(
         proxy.formatted,
@@ -40,6 +54,10 @@ async function checkProxy(
           ...proxy,
           status: "fail",
           protocol: proxy.protocol,
+          errorDetails: {
+            message: result.errorMessage || "Connection failed",
+            protocolsTried: [proxy.protocol],
+          },
         };
       }
     }
@@ -78,12 +96,20 @@ async function checkProxy(
     // All protocols failed - return the last error with all protocols tried
     return {
       ...proxy,
-      status: lastError?.status || "unknown_error",
+      status: "fail",
+      protocol: "unknown",
+      errorDetails: {
+        message: lastError?.errorMessage || "All protocols failed",
+        protocolsTried,
+      },
     };
   } catch (error: any) {
     return {
       ...proxy,
       status: "fail",
+      errorDetails: {
+        message: error.message || "Unexpected error",
+      },
     };
   } finally {
   }
@@ -100,7 +126,6 @@ app.use(
 app.use(express.json({ limit: "50mb" }));
 
 app.post("/api/proxy-check", async (req: Request, res: Response) => {
-  console.log("Received proxy check request via Express.");
   const { proxies, options } = req.body as {
     proxies: Proxy[];
     options: ProxyTesterOptions;
@@ -115,7 +140,6 @@ app.post("/api/proxy-check", async (req: Request, res: Response) => {
   const queue = [...proxies];
 
   res.on("close", () => {
-    console.log("Client disconnected, stopping proxy check tasks.");
   });
 
   const runTask = async () => {
@@ -147,20 +171,12 @@ app.post("/test-proxy-pro", async (req: Request, res: Response) => {
       });
     }
 
-    console.log(`🚀 Pro Mode testing proxy: ${proxy}`);
     
     const result = await proModeServerTester.testProxyProMode(proxy, options);
     
-    console.log(`✅ Pro Mode test completed for ${proxy}:`, {
-      status: result.status,
-      connections: result.connections.length,
-      firstConnTime: result.firstConnectionTime,
-      avgTime: result.averageMetrics.totalTime
-    });
 
     res.json(result);
   } catch (error) {
-    console.error("❌ Pro Mode test error:", error);
     res.status(500).json({ 
       error: "Internal server error",
       message: error instanceof Error ? error.message : "Unknown error"
@@ -183,7 +199,6 @@ app.post("/test-proxies-pro-batch", async (req: Request, res: Response) => {
       return res.end();
     }
 
-    console.log(`🚀 Pro Mode batch testing ${proxies.length} proxies with concurrency ${concurrencyLimit}`);
 
     const queue = [...proxies];
     
@@ -200,7 +215,6 @@ app.post("/test-proxies-pro-batch", async (req: Request, res: Response) => {
             proxy,
             status: 'fail',
             error: error instanceof Error ? error.message : 'Unknown error',
-            testMethod: options.testMethod || 'advanced',
             connections: [],
             averageMetrics: {
               dnsLookupTime: 0,
@@ -229,7 +243,6 @@ app.post("/test-proxies-pro-batch", async (req: Request, res: Response) => {
 
     res.end();
   } catch (error) {
-    console.error("❌ Pro Mode batch test error:", error);
     res.write(`data: ${JSON.stringify({ error: "Batch test failed" })}\n\n`);
     res.end();
   }
@@ -262,7 +275,6 @@ app.get("/pro-mode-stats", (req: Request, res: Response) => {
       'responseDownloadTime',
       'totalTime'
     ],
-    testMethods: ['fetch', 'advanced', 'all'],
     protocols: ['http', 'https', 'socks4', 'socks5'],
     maxConcurrency: 50,
     maxConnectionsPerProxy: 10
@@ -272,9 +284,5 @@ app.get("/pro-mode-stats", (req: Request, res: Response) => {
 });
 
 app.listen(port, "127.0.0.1", () => {
-  console.log(`✅ Express server listening on port ${port}`);
-  console.log(`🚀 Pro Mode endpoints available:`);
-  console.log(`   POST /test-proxy-pro - Single proxy advanced testing`);
-  console.log(`   POST /test-proxies-pro-batch - Batch proxy advanced testing`);
-  console.log(`   GET /pro-mode-stats - Pro Mode capabilities`);
+  // Server started successfully
 });

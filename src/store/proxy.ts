@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { Proxy, ProxyTesterOptions, TestStatus } from "@/types";
+import { Proxy, ProxyTesterOptions, TestStatus, ProModeTestResult } from "@/types";
 
 type ProxyTesterState = {
   loadedProxies: Proxy[];
@@ -24,8 +24,8 @@ type ProxyTesterActions = {
   finalizeTest: () => void;
   
   // Pro Mode actions
-  testProxyProMode: (proxy: string) => Promise<any>;
-  testProxiesProModeBatch: (proxies: string[], onProgress?: (result: any) => void) => Promise<any[]>;
+  testProxyProMode: (proxy: string) => Promise<ProModeTestResult>;
+  testProxiesProModeBatch: (proxies: string[], onProgress?: (result: ProModeTestResult) => void) => Promise<ProModeTestResult[]>;
 };
 
 const initialState: ProxyTesterState = {
@@ -135,7 +135,7 @@ export const useProxyTesterStore = create<
     }
   },
 
-  testProxiesProModeBatch: async (proxies: string[], onProgress?: (result: any) => void) => {
+  testProxiesProModeBatch: async (proxies: string[], onProgress?: (result: ProModeTestResult) => void) => {
     const state = get();
     if (!state.options.proMode) {
       throw new Error("Pro Mode is not enabled");
@@ -163,7 +163,7 @@ export const useProxyTesterStore = create<
     }
 
     const decoder = new TextDecoder();
-    const results: any[] = [];
+    const results: ProModeTestResult[] = [];
 
     try {
       while (true) {
@@ -181,7 +181,7 @@ export const useProxyTesterStore = create<
               if (onProgress) {
                 onProgress(data);
               }
-            } catch (e) {
+            } catch {
               console.warn("Failed to parse SSE data:", line);
             }
           }
