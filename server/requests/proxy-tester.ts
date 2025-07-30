@@ -649,15 +649,39 @@ export class EnhancedProxyTester {
         metrics.sessionReused = true;
         options.reuseSession.requestCount++;
         options.reuseSession.lastUsed = Date.now();
+
+        // For reused sessions, DNS is already resolved and cached
+        metrics.dnsLookupTime = 0; // DNS was cached from first connection
       } else {
         console.log("Creating new socket connection...");
-        // DNS Resolution with caching
+
+        // DNS Resolution WITHOUT caching for first connection
         timings.dnsStart = performance.now();
-        await this.resolveDnsWithCache(parsedProxy.host);
-        timings.dnsEnd = performance.now();
-        metrics.dnsLookupTime = this.roundTiming(
-          timings.dnsEnd - timings.dnsStart
-        );
+
+        if (connectionNumber === 1) {
+          // First connection: Do actual DNS lookup and measure it
+          console.log("First connection: Performing fresh DNS lookup...");
+          await this.performFreshDnsLookup(parsedProxy.host);
+          timings.dnsEnd = performance.now();
+          metrics.dnsLookupTime = this.roundTiming(
+            timings.dnsEnd - timings.dnsStart
+          );
+
+          // AFTER measuring, store in cache for subsequent connections
+          const resolvedIp = await this.resolveDnsWithCache(parsedProxy.host);
+          console.log(
+            `DNS resolved to ${resolvedIp}, now cached for subsequent connections`
+          );
+        } else {
+          // Subsequent connections: Use cached DNS
+          console.log("Subsequent connection: Using cached DNS lookup...");
+          await this.resolveDnsWithCache(parsedProxy.host);
+          timings.dnsEnd = performance.now();
+          metrics.dnsLookupTime = this.roundTiming(
+            timings.dnsEnd - timings.dnsStart
+          );
+          console.log(`Cached DNS lookup took ${metrics.dnsLookupTime}ms`);
+        }
 
         console.log("DNS resolved, creating socket...");
 
@@ -1938,6 +1962,31 @@ export class EnhancedProxyTester {
     return this.parseProxyString(proxyString) !== null;
   }
 
+  private async performFreshDnsLookup(hostname: string): Promise<string> {
+    // Check if it's already an IP
+    if (/^\d+\.\d+\.\d+\.\d+$/.test(hostname)) {
+      return hostname;
+    }
+
+    try {
+      // Always do fresh DNS lookup, don't check cache
+      const addresses = await Promise.race([
+        dns.resolve4(hostname),
+        new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error("DNS timeout")), 3000)
+        ),
+      ]);
+
+      const ip = addresses[0];
+      console.log(`Fresh DNS lookup: ${hostname} -> ${ip}`);
+      return ip;
+    } catch (error) {
+      console.log(`Fresh DNS lookup failed for ${hostname}:`, error);
+      // If DNS fails, try to use hostname as-is
+      return hostname;
+    }
+  }
+
   private async resolveDnsWithCache(hostname: string): Promise<string> {
     // Check if it's already an IP
     if (/^\d+\.\d+\.\d+\.\d+$/.test(hostname)) {
@@ -1946,6 +1995,7 @@ export class EnhancedProxyTester {
 
     const cached = this.DNS_CACHE.get(hostname);
     if (cached && Date.now() - cached.timestamp < this.DNS_CACHE_TTL) {
+      console.log(`Using cached DNS: ${hostname} -> ${cached.ip}`);
       return cached.ip;
     }
 
@@ -1959,8 +2009,10 @@ export class EnhancedProxyTester {
 
       const ip = addresses[0];
       this.DNS_CACHE.set(hostname, { ip, timestamp: Date.now() });
+      console.log(`DNS resolved and cached: ${hostname} -> ${ip}`);
       return ip;
     } catch (error) {
+      console.log(`Cached DNS lookup failed for ${hostname}:`, error);
       // If DNS fails, try to use hostname as-is
       return hostname;
     }
