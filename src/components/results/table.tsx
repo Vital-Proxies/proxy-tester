@@ -11,6 +11,7 @@ import { isTauri } from "@tauri-apps/api/core";
 import { platform } from "@tauri-apps/plugin-os";
 import { TooltipProvider } from "../ui/tooltip";
 import ResultsTableHead from "./table-head";
+import { useEffect, useState } from "react";
 
 const EmptyStateWaiting = () => (
   <div className="flex flex-col items-center justify-center h-64 px-8">
@@ -31,15 +32,21 @@ const EmptyStateWaiting = () => (
 );
 
 const EmptyStateIdle = ({ activeMode }: { activeMode: string }) => {
-  const platformKey = () => {
-    if (isTauri()) {
-      return platform() == "macos" ? "⌘" : "Ctrl";
-    }
+  const [platformKey, setPlatformKey] = useState("Ctrl");
 
-    return "Ctrl";
-  };
-
-  //Fallback for web platform (even though Tauri is used, but just in case)
+  useEffect(() => {
+    const detectPlatform = async () => {
+      if (isTauri()) {
+        try {
+          const os = platform();
+          setPlatformKey(os === "macos" ? "⌘" : "Ctrl");
+        } catch {
+          setPlatformKey("Ctrl");
+        }
+      }
+    };
+    detectPlatform();
+  }, []);
 
   return (
     <div className="flex flex-col items-center justify-center h-64 px-8">
@@ -67,7 +74,7 @@ const EmptyStateIdle = ({ activeMode }: { activeMode: string }) => {
         >
           <span className="text-text-secondary">Press</span>
           <kbd className="px-2 py-1 bg-white/3 border border-white/15 rounded-md text-xs font-mono text-white backdrop-blur-sm">
-            {platformKey()} + V
+            {platformKey} + V
           </kbd>
           <span className="text-text-secondary">
             anywhere to load your proxies
