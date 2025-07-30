@@ -12,6 +12,7 @@ type ProxyTesterState = {
 
 type ProxyTesterActions = {
   replaceAllProxies: (proxies: Proxy[]) => void;
+  addLoadedProxies: (proxies: Proxy[]) => void;
   clearAll: () => void;
   setOptions: (option: Partial<ProxyTesterOptions>) => void;
   setTestStatus: (status: TestStatus) => void;
@@ -63,6 +64,11 @@ export const useProxyTesterStore = create<
       },
     })),
 
+  addLoadedProxies: (proxies) =>
+    set((state) => ({
+      loadedProxies: [...state.loadedProxies, ...proxies],
+    })),
+
   replaceAllProxies: (proxies) => set({ loadedProxies: proxies }),
   setTestStatus: (status) => set({ testStatus: status }),
   clearAll: () =>
@@ -105,9 +111,8 @@ export const useProxyTesterStore = create<
 
   addTestResult: (result) =>
     set((state) => {
-      // Check if this proxy already exists in testedProxies
       const existingIndex = state.testedProxies.findIndex(
-        (p) => p.raw === result.raw
+        (p) => p.id === result.id
       );
 
       if (existingIndex >= 0) {

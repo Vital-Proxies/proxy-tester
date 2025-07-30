@@ -147,6 +147,8 @@ export function convertRawStringsToProxy(raw: string[]): Proxy[] {
       const normalizedProxy = normalizeProxy(raw);
       if (!normalizedProxy) return null;
       return {
+        id: crypto.randomUUID(),
+        latency: 0,
         raw,
         protocol: normalizedProxy.protocol,
         formatted: normalizedProxy.formatted,

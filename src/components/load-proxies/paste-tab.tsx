@@ -47,6 +47,7 @@ export default function PasteTab({
           if (!normalizedProxy) return null;
 
           const proxy: Proxy = {
+            id: crypto.randomUUID(),
             raw: raw,
             protocol: normalizedProxy.protocol,
             formatted: normalizedProxy.formatted,

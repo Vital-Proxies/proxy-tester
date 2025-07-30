@@ -9,6 +9,7 @@ export type ProxyStatus = "ok" | "fail" | "unknown";
 export type TestStatus = "idle" | "testing" | "stopping" | "finished";
 
 export type Proxy = {
+  id: string;
   raw: string;
   formatted: string;
   status: ProxyStatus;

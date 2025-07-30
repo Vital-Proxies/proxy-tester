@@ -6,7 +6,7 @@ import { isTauri } from "@tauri-apps/api/core";
 import { readText } from "@tauri-apps/plugin-clipboard-manager";
 
 export function useGlobalPasteProxies() {
-  const { replaceAllProxies, testStatus } = useProxyTesterStore();
+  const { addLoadedProxies, testStatus } = useProxyTesterStore();
 
   useEffect(() => {
     const handleGlobalPaste = async (event: KeyboardEvent) => {
@@ -64,7 +64,7 @@ export function useGlobalPasteProxies() {
           event.stopPropagation();
 
           // Replace proxies in store
-          replaceAllProxies(processedProxies);
+          addLoadedProxies(processedProxies);
 
           // Show success toast with better message
           toast.success(
@@ -111,5 +111,5 @@ export function useGlobalPasteProxies() {
     return () => {
       document.removeEventListener("keydown", handleGlobalPaste);
     };
-  }, [replaceAllProxies, testStatus]);
+  }, [addLoadedProxies, testStatus]);
 }
