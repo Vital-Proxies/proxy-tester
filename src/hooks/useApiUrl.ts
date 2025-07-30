@@ -8,14 +8,6 @@ import { fetch as tauriFetch } from "@tauri-apps/plugin-http";
 const API_PORT = 3001;
 const API_URL = `http://localhost:${API_PORT}`;
 
-// Return type of our universal fetch
-type ApiResponse<T = any> = {
-  status: number;
-  statusText: string;
-  ok: boolean;
-  data: T;
-};
-
 export function useApi() {
   const childProcessRef = useRef<Child | null>(null);
 

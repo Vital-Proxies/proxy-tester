@@ -17,36 +17,35 @@ export default function ServerHealthIndicator() {
   const { getUrl, fetch } = useApi();
   const [healthy, setHealthy] = useState<boolean | null>(null);
 
-  const checkServerHealth = async () => {
-    try {
-      const response = await fetch(isTauri())(getUrl("/health"), {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      console.log("Server health check response:", response);
-
-      if (response.status === 200) {
-        setHealthy(true);
-      } else {
-        toast.error("Backend server is unreachable", {
-          description:
-            "Try restarting the app or make sure nothing is running on port 3001.",
+  useEffect(() => {
+    const checkServerHealth = async () => {
+      try {
+        const response = await fetch(isTauri())(getUrl("/health"), {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
         });
+
+        console.log("Server health check response:", response);
+
+        if (response.status === 200) {
+          setHealthy(true);
+        } else {
+          toast.error("Backend server is unreachable", {
+            description:
+              "Try restarting the app or make sure nothing is running on port 3001.",
+          });
+          setHealthy(false);
+        }
+      } catch (error) {
         setHealthy(false);
       }
-    } catch (error) {
-      setHealthy(false);
-    }
-  };
-
-  useEffect(() => {
+    };
     checkServerHealth();
     const interval = setInterval(checkServerHealth, 10000);
     return () => clearInterval(interval);
-  }, []);
+  }, [fetch, getUrl]);
 
   const getStatusConfig = () => {
     if (healthy === null) {

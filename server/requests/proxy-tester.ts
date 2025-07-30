@@ -2115,8 +2115,6 @@ export class EnhancedProxyTester {
         subsequentConnectionTime: result.subsequentConnectionTime || 0,
         connectionsCount: connections.length,
         detailedMetrics: connections[0] || this.createEmptyMetrics(),
-        exitIp: result.exitIp ?? "NO EXIT IP",
-        geolocation: result.geolocation,
       },
     };
   }

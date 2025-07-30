@@ -96,8 +96,6 @@ export interface ProDetails {
   firstConnectionTime: number;
   subsequentConnectionTime: number;
   connectionsCount: number;
-  exitIp: string;
-  geolocation: any;
   detailedMetrics: DetailedLatencyMetrics;
 }
 
@@ -108,6 +106,7 @@ export interface NormalizedProxy {
 
 // Additional interface for internal use in the low-level tester
 export interface ConnectionSession {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   socket: any;
   protocol: ProxyProtocol;
   proxy: string;

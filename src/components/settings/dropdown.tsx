@@ -83,7 +83,7 @@ export default function SettingsDropdown() {
 
   useEffect(() => {
     setOptions({ ...options, activeMode: activeTabId as "simple" | "pro" });
-  }, [activeTabId, setOptions]);
+  }, [activeTabId, setOptions, options]);
 
   return (
     <>

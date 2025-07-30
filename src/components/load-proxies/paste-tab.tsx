@@ -29,7 +29,7 @@ export default function PasteTab({
   useLayoutEffect(() => {
     if (!ref.current) return;
     setHeight(ref.current.scrollHeight);
-  }, [text]);
+  }, [text, setHeight]);
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value;
