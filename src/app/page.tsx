@@ -1,52 +1,48 @@
-import ProxyList from "@/components/proxy-list";
-import ProxyConfiguration from "@/components/proxy-configuration";
-import ProxyPasteBox from "@/components/proxy-paste-box";
-import ProxyToolbar from "@/components/proxy-toolbar";
-import { BarChart2, Cog, Wand2 } from "lucide-react";
+"use client";
+
+import LoadProxiesDropdown from "@/components/load-proxies/dropdown";
+import ModeToggleSwitch from "@/components/mode-toggle-switch";
+import ProxyList from "@/components/results/table";
+import ProxyToolbar from "@/components/results/toolbar";
+import SettingsDropdown from "@/components/settings/dropdown";
+import TargetUrlInput from "@/components/target-url-input";
+import UpdateChecker from "@/components/updater/update-checker";
+import { useGlobalPasteProxies } from "@/hooks/useGlobalPasteProxies";
+import dynamic from "next/dynamic";
 
 export default function Home() {
-  return (
-    <div className="w-full px-4 py-4">
-      <div className="flex flex-col gap-4">
-        {/* Top Section - Paste and Configuration */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          {/* Paste Proxies */}
-          <div className="rounded-md border bg-white/5 backdrop-blur-3xl px-6 py-4">
-            <div className="flex items-center gap-2 mb-4">
-              <Wand2 className="text-accent" size={24} />
-              <h3 className="text-xl font-medium text-text-primary">
-                Paste Proxies
-              </h3>
-            </div>
-            <p className="text-sm text-text-secondary mb-4">
-              <span className="text-accent">Paste</span> your proxy list below
-              and we&apos;ll magically figure out the format for you.
-            </p>
-            <ProxyPasteBox />
-          </div>
+  useGlobalPasteProxies();
 
-          {/* Configuration */}
-          <div className="rounded-md border bg-white/5 backdrop-blur-3xl px-6 py-4">
-            <div className="flex items-center gap-2 mb-4">
-              <Cog className="text-accent" size={24} />
-              <h3 className="text-xl font-medium text-text-primary">
-                Configuration
-              </h3>
-            </div>
-            <ProxyConfiguration />
+  return (
+    <div className="mt-6 flex w-full flex-col gap-6">
+      <div className="flex w-full">
+        <UpdateChecker />
+      </div>
+      <div className="w-full flex lg:items-center gap-6 items-start flex-col lg:flex-row justify-between">
+        <div className="flex gap-2 w-1/2">
+          <div className="w-64">
+            <ModeToggleSwitch />
           </div>
+          <TargetUrlInput />
         </div>
 
-        {/* Results Section */}
-        <div className="rounded-md border bg-white/5 backdrop-blur-3xl px-4 py-4">
-          <div className="flex items-center gap-2 mb-2">
-            <BarChart2 className="text-accent" size={28} />
-            <h3 className="text-2xl font-medium text-text-primary">
-              Results
-            </h3>
+        <div className="flex items-center lg:justify-end gap-2 w-1/2 ">
+          <LoadProxiesDropdown />
+          <SettingsDropdown />
+        </div>
+      </div>
+
+      <div className="h-full flex flex-col overflow-hidden">
+        <div className="flex flex-col flex-1 overflow-hidden rounded-xl border border-white/10 bg-white/5">
+          <div className="border-b border-white/10 shrink-0 px-5 py-4 ">
+            <ProxyToolbar />
           </div>
-          <ProxyToolbar />
-          <ProxyList />
+
+          <div className="flex-1 overflow-hidden px-5 py-4 ">
+            <div className="h-full overflow-y-auto">
+              <ProxyList />
+            </div>
+          </div>
         </div>
       </div>
     </div>

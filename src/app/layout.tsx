@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "@/styles/globals.css";
-import Header from "@/components/header";
-import UpdateChecker from "@/components/update-checker";
+import Header from "@/components/navigation/header";
+import { Toaster } from "@/components/ui/sonner";
+import ServerHealthIndicator from "@/components/server-health-indicator";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,12 +36,9 @@ export default function RootLayout({
               <Header />
             </div>
 
-            <div className="mt-6 flex w-full flex-col ">
-              <div className="w-full flex justify-end">
-                <UpdateChecker />
-              </div>
-              {children}
-            </div>
+            <Toaster position="bottom-center" richColors duration={4000} />
+            <ServerHealthIndicator />
+            {children}
           </div>
         </div>
       </body>

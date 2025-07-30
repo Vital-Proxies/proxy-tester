@@ -7,37 +7,11 @@ import { isTauri } from "@tauri-apps/api/core";
 import { ArrowRight, Zap } from "lucide-react";
 import HeaderSocials from "./header-socials";
 import { useProxyTesterStore } from "@/store/proxy";
+import { handleOpenUrl } from "@/lib/utils";
 
 export default function Header() {
-  const { options, setOptions } = useProxyTesterStore();
-  const isProMode = options.proMode || false;
-
-  const handleOpenUrl = (url: string) => {
-    if (isTauri()) {
-      openUrl(url).catch(console.error);
-    } else {
-      window.open(url, '_blank');
-    }
-  };
-
-  const toggleProMode = () => {
-    setOptions({
-      ...options,
-      proMode: !isProMode,
-      // Set pro mode defaults when enabling
-      ...((!isProMode) && {
-        connectionsPerProxy: 3,
-        testAllConnections: true,
-        detailedMetrics: true,
-        connectionPooling: true,
-        testMethod: 'advanced',
-        retryCount: 1,
-      })
-    });
-  };
-
   return (
-    <header className="flex w-full items-center justify-between p-4 border-b border-white/10">
+    <header className="flex w-full items-center justify-between py-4 border-b border-white/10">
       <div className="flex items-center gap-4">
         <Image
           src="/brand/logo-icon.svg"
@@ -57,6 +31,16 @@ export default function Header() {
 
       <div className="flex items-center gap-4">
         <HeaderSocials />
+        <Button
+          onClick={() =>
+            handleOpenUrl(
+              "https://vital-proxies.com/?utm_source=vital-tester&utm_medium=app&utm_campaign=try-pro"
+            )
+          }
+        >
+          Try Vital for Free
+          <ArrowRight className="size-4" />
+        </Button>
       </div>
     </header>
   );

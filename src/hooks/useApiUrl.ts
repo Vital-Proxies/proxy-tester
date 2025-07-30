@@ -3,9 +3,18 @@
 import { useEffect, useRef, useCallback } from "react";
 import { Command, Child } from "@tauri-apps/plugin-shell";
 import { isTauri } from "@tauri-apps/api/core";
+import { fetch as tauriFetch } from "@tauri-apps/plugin-http";
 
-const API_PORT = 3002;
+const API_PORT = 3001;
 const API_URL = `http://localhost:${API_PORT}`;
+
+// Return type of our universal fetch
+type ApiResponse<T = any> = {
+  status: number;
+  statusText: string;
+  ok: boolean;
+  data: T;
+};
 
 export function useApi() {
   const childProcessRef = useRef<Child | null>(null);
@@ -56,10 +65,14 @@ export function useApi() {
     };
   }, []);
 
+  //Not really needed tbh
   const getUrl = useCallback((path: string): string => {
     const formattedPath = path.startsWith("/") ? path : `/${path}`;
-    return isTauri() ? `${API_URL}${formattedPath}` : formattedPath;
+    return `${API_URL}${formattedPath}`;
   }, []);
 
-  return { getUrl };
+  const fetch = useCallback((isTauri: boolean) => {
+    return isTauri ? tauriFetch : window.fetch;
+  }, []);
+  return { getUrl, fetch };
 }

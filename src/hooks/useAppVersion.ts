@@ -13,8 +13,7 @@ export default function useAppVersion() {
         const version = await getVersion();
         setAppVersion(version);
       } else {
-        // In web environment, use a default version or get it from package.json
-        setAppVersion("1.1.0");
+        setAppVersion("1.0.0");
       }
     };
 

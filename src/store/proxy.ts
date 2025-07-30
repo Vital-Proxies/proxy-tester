@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { Proxy, ProxyTesterOptions, TestStatus, ProModeTestResult } from "@/types";
+import { ProModeOptions, Proxy, ProxyTesterOptions, TestStatus } from "@/types";
 
 type ProxyTesterState = {
   loadedProxies: Proxy[];
@@ -22,10 +22,6 @@ type ProxyTesterActions = {
   stopTest: () => void;
   addTestResult: (result: Proxy) => void;
   finalizeTest: () => void;
-  
-  // Pro Mode actions
-  testProxyProMode: (proxy: string) => Promise<ProModeTestResult>;
-  testProxiesProModeBatch: (proxies: string[], onProgress?: (result: ProModeTestResult) => void) => Promise<ProModeTestResult[]>;
 };
 
 const initialState: ProxyTesterState = {
@@ -33,10 +29,20 @@ const initialState: ProxyTesterState = {
   testedProxies: [],
   isLoading: false,
   options: {
-    ipLookup: false,
-    latencyCheck: true,
+    activeMode: "simple",
+    simpleMode: {
+      ipLookup: true,
+      latencyCheck: true,
+    },
     targetUrl: "https://www.google.com",
-    proMode: false,
+    proMode: {
+      connectionsPerProxy: 3,
+      testAllConnections: false,
+      detailedMetrics: false,
+      connectionPooling: true,
+      retryCount: 3,
+      customTimeout: 15000,
+    },
   },
   testStatus: "idle",
   abortController: null,
@@ -54,6 +60,7 @@ export const useProxyTesterStore = create<
       testedProxies: [],
       loadedProxies: [],
       isLoading: false,
+      testStatus: "idle",
     }),
 
   stopTest: () => {
@@ -89,8 +96,10 @@ export const useProxyTesterStore = create<
   addTestResult: (result) =>
     set((state) => {
       // Check if this proxy already exists in testedProxies
-      const existingIndex = state.testedProxies.findIndex(p => p.raw === result.raw);
-      
+      const existingIndex = state.testedProxies.findIndex(
+        (p) => p.raw === result.raw
+      );
+
       if (existingIndex >= 0) {
         // Update existing proxy
         const updatedProxies = [...state.testedProxies];
@@ -133,64 +142,5 @@ export const useProxyTesterStore = create<
       console.error("Pro Mode test failed:", error);
       throw error;
     }
-  },
-
-  testProxiesProModeBatch: async (proxies: string[], onProgress?: (result: ProModeTestResult) => void) => {
-    const state = get();
-    if (!state.options.proMode) {
-      throw new Error("Pro Mode is not enabled");
-    }
-
-    const response = await fetch("/api/test-proxies-pro-batch", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        proxies,
-        options: state.options,
-        concurrencyLimit: 10, // Default concurrency
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
-
-    const reader = response.body?.getReader();
-    if (!reader) {
-      throw new Error("No response body reader available");
-    }
-
-    const decoder = new TextDecoder();
-    const results: ProModeTestResult[] = [];
-
-    try {
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        const chunk = decoder.decode(value);
-        const lines = chunk.split("\n");
-
-        for (const line of lines) {
-          if (line.startsWith("data: ")) {
-            try {
-              const data = JSON.parse(line.slice(6));
-              results.push(data);
-              if (onProgress) {
-                onProgress(data);
-              }
-            } catch {
-              console.warn("Failed to parse SSE data:", line);
-            }
-          }
-        }
-      }
-    } finally {
-      reader.releaseLock();
-    }
-
-    return results;
   },
 }));
