@@ -1,15 +1,15 @@
 "use client";
 
-import { openUrl } from "@tauri-apps/plugin-opener";
 import Image from "next/image";
-import { Button } from "./ui/button";
+import { Button } from "../ui/button";
 import { Globe, Github } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "./ui/tooltip";
+} from "../ui/tooltip";
+import { handleOpenUrl } from "@/lib/utils";
 
 const socialLinks = [
   {
@@ -39,10 +39,6 @@ const socialLinks = [
 ];
 
 export default function HeaderSocials() {
-  const handleOpenUrl = (url: string) => {
-    openUrl(url).catch(console.error);
-  };
-
   return (
     <TooltipProvider>
       <div className="flex items-center gap-1 py-5">

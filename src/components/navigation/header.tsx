@@ -3,16 +3,15 @@
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { openUrl } from "@tauri-apps/plugin-opener";
-import { ArrowRight } from "lucide-react";
+import { isTauri } from "@tauri-apps/api/core";
+import { ArrowRight, Zap } from "lucide-react";
 import HeaderSocials from "./header-socials";
+import { useProxyTesterStore } from "@/store/proxy";
+import { handleOpenUrl } from "@/lib/utils";
 
 export default function Header() {
-  const handleOpenUrl = (url: string) => {
-    openUrl(url).catch(console.error);
-  };
-
   return (
-    <header className="flex w-full items-center justify-between p-4 border-b border-white/10">
+    <header className="flex w-full items-center justify-between py-4 border-b border-white/10">
       <div className="flex items-center gap-4">
         <Image
           src="/brand/logo-icon.svg"
@@ -32,19 +31,15 @@ export default function Header() {
 
       <div className="flex items-center gap-4">
         <HeaderSocials />
-
         <Button
-          className="group relative inline-flex h-9 items-center justify-center overflow-hidden rounded-md bg-accent px-4 font-medium text-neutral-50 transition-all duration-300 hover:bg-accent/90"
           onClick={() =>
             handleOpenUrl(
-              "https://www.vital-proxies.com/?utm_source=vital-tester&utm_medium=app&utm_campaign=buy-proxies"
+              "https://vital-proxies.com/?utm_source=vital-tester&utm_medium=app&utm_campaign=try-pro"
             )
           }
         >
-          <span className="flex items-center">
-            Try Vital For Free
-            <ArrowRight className="ml-2 size-4 transition-transform duration-300 group-hover:translate-x-1" />
-          </span>
+          Try Vital for Free
+          <ArrowRight className="size-4" />
         </Button>
       </div>
     </header>

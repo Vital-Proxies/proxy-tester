@@ -12,6 +12,10 @@
 
 # testing
 /coverage
+*.test.js
+*.test.ts
+test-*.js
+test-*.ts
 
 # next.js
 /.next/
@@ -46,3 +50,5 @@ next-env.d.ts
 
 # Tauri build artifacts
 /src-tauri/bin/
+/proxytester_advanced.py
+/.claude
