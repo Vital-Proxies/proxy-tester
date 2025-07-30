@@ -109,8 +109,8 @@ export default function ProModeSettings({
                   </p>
                   <p>
                     <strong>Disabled:</strong> Every connection performs full
-                    handshake from scratch, testing "cold start" performance
-                    consistently.
+                    handshake from scratch, testing &quot;cold start&quot;
+                    performance consistently.
                   </p>
                 </div>
               </div>

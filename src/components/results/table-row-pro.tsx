@@ -269,7 +269,7 @@ export default function ResultsTableRowPro({
 
                   <div className="bg-white/5 p-3 rounded border">
                     <p className="font-medium text-cyan-400 mb-2">
-                      🚀 Why It's Faster
+                      🚀 Why It&apos;s Faster
                     </p>
                     <div className="text-xs text-white/70 space-y-1">
                       <p>• DNS lookup skipped (cached result)</p>
@@ -280,7 +280,7 @@ export default function ResultsTableRowPro({
                   </div>
 
                   <div className="text-xs text-white/60 italic">
-                    This is the speed you'll experience for most requests
+                    This is the speed you&apos;ll experience for most requests
                   </div>
                 </div>
               </TooltipContent>
@@ -306,7 +306,7 @@ export default function ResultsTableRowPro({
                     Time to convert proxy hostname to IP address
                   </p>
                   <div className="text-xs text-white/70 space-y-1">
-                    <p>• Queries DNS servers for proxy's IP</p>
+                    <p>• Queries DNS servers for proxy&apos;s IP</p>
                     <p>• Result gets cached for future requests</p>
                     <p>• High values may indicate slow DNS servers</p>
                   </div>
