@@ -34,7 +34,7 @@ const slideVariants = {
 };
 
 export default function SettingsDropdown() {
-  const { options, setOptions } = useProxyTesterStore();
+  const { options, setMode } = useProxyTesterStore();
   const [showSettings, setShowSettings] = useState(false);
   const [[activeTabIndex, direction], setActiveTab] = useState([0, 0]);
   const [contentHeight, setContentHeight] = useState(0);
@@ -82,8 +82,8 @@ export default function SettingsDropdown() {
   }, []);
 
   useEffect(() => {
-    setOptions({ ...options, activeMode: activeTabId as "simple" | "pro" });
-  }, [activeTabId, setOptions, options]);
+    setMode(activeTabId as "simple" | "pro");
+  }, [activeTabId, setMode]);
 
   return (
     <>

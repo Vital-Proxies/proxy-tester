@@ -17,6 +17,8 @@ type ProxyTesterActions = {
   setTestStatus: (status: TestStatus) => void;
   removeTestedProxy: (proxy: Proxy) => void;
 
+  setMode: (mode: "simple" | "pro") => void;
+
   // New test lifecycle actions
   prepareForTest: (controller: AbortController) => void;
   stopTest: () => void;
@@ -52,6 +54,14 @@ export const useProxyTesterStore = create<
   ProxyTesterState & ProxyTesterActions
 >()((set, get) => ({
   ...initialState,
+
+  setMode: (mode) =>
+    set((state) => ({
+      options: {
+        ...state.options,
+        activeMode: mode,
+      },
+    })),
 
   replaceAllProxies: (proxies) => set({ loadedProxies: proxies }),
   setTestStatus: (status) => set({ testStatus: status }),
