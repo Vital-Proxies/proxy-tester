@@ -34,10 +34,7 @@ export default function ModeToggleSwitch({ enableTooltip = true }) {
               </Button>
             </TooltipTrigger>
             {enableTooltip && (
-              <TooltipContent
-                side="bottom"
-                className="bg-gray-900/95 border-white/20"
-              >
+              <TooltipContent side="bottom">
                 <div className="text-xs">
                   <div className="font-medium text-white">Simple Mode</div>
                   <div className="text-white/70">Fast basic proxy testing</div>
@@ -65,10 +62,7 @@ export default function ModeToggleSwitch({ enableTooltip = true }) {
               </Button>
             </TooltipTrigger>
             {enableTooltip && (
-              <TooltipContent
-                side="bottom"
-                className="bg-gray-900/95 border-white/20"
-              >
+              <TooltipContent side="bottom">
                 <div className="text-xs">
                   <div className="font-medium text-white">Pro Mode</div>
                   <div className="text-white/70">Comprehensive analysis</div>

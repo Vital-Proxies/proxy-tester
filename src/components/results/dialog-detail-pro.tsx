@@ -42,6 +42,8 @@ export default function ProModeMetrics({
       icon: Network,
       color: "blue",
       description: "Time to resolve domain name to IP address",
+      isRelevant: averageMetrics.dnsLookupTime > 0,
+      order: 1,
     },
     {
       label: "TCP Connect (Proxy Latency)",
@@ -50,6 +52,8 @@ export default function ProModeMetrics({
       color: "green",
       description:
         "Direct latency to proxy server - Time to establish TCP connection",
+      isRelevant: averageMetrics.tcpConnectTime > 0,
+      order: 2,
     },
     {
       label: "TLS Handshake",
@@ -57,13 +61,8 @@ export default function ProModeMetrics({
       icon: Shield,
       color: "purple",
       description: "Time to negotiate secure connection",
-    },
-    {
-      label: "Proxy Connect",
-      value: averageMetrics.proxyConnectTime,
-      icon: Server,
-      color: "orange",
-      description: "Time to connect through proxy",
+      isRelevant: averageMetrics.tlsHandshakeTime > 0,
+      order: 3,
     },
     {
       label: "Proxy Auth",
@@ -71,6 +70,17 @@ export default function ProModeMetrics({
       icon: Layers,
       color: "indigo",
       description: "Time for proxy authentication",
+      isRelevant: averageMetrics.proxyAuthTime > 0,
+      order: 4,
+    },
+    {
+      label: "Proxy Connect",
+      value: averageMetrics.proxyConnectTime,
+      icon: Server,
+      color: "orange",
+      description: "Time to connect through proxy",
+      isRelevant: averageMetrics.proxyConnectTime > 0,
+      order: 5,
     },
     {
       label: "Request Send",
@@ -78,6 +88,8 @@ export default function ProModeMetrics({
       icon: Upload,
       color: "cyan",
       description: "Time to send request to server",
+      isRelevant: averageMetrics.requestSendTime > 0,
+      order: 6,
     },
     {
       label: "Response Wait",
@@ -85,6 +97,8 @@ export default function ProModeMetrics({
       icon: Clock,
       color: "pink",
       description: "Time waiting for server response",
+      isRelevant: averageMetrics.responseWaitTime > 0,
+      order: 7,
     },
     {
       label: "Download",
@@ -92,8 +106,15 @@ export default function ProModeMetrics({
       icon: Download,
       color: "emerald",
       description: "Time to download response data",
+      isRelevant: averageMetrics.responseDownloadTime > 0,
+      order: 8,
     },
   ];
+
+  // Filter out metrics that don't apply and sort by order
+  const relevantMetrics = metricItems
+    .filter((item) => item.isRelevant)
+    .sort((a, b) => a.order - b.order);
 
   const colorClasses = {
     blue: "bg-blue-500/20 text-blue-300 border-blue-500/30",
@@ -110,7 +131,7 @@ export default function ProModeMetrics({
     return (
       <TooltipProvider>
         <div className="flex gap-2 flex-wrap">
-          {metricItems.slice(0, 4).map((item) => (
+          {relevantMetrics.slice(0, 4).map((item) => (
             <Tooltip key={item.label}>
               <TooltipTrigger asChild>
                 <div
@@ -162,46 +183,65 @@ export default function ProModeMetrics({
                     label: "DNS",
                     value: firstConnection.dnsLookupTime,
                     color: "bg-blue-500",
+                    order: 1,
                   },
                   {
                     label: "TCP (Proxy)",
                     value: firstConnection.tcpConnectTime,
                     color: "bg-green-500",
+                    order: 2,
                   },
                   {
                     label: "TLS",
                     value: firstConnection.tlsHandshakeTime,
                     color: "bg-purple-500",
-                  },
-                  {
-                    label: "Proxy Connect",
-                    value: firstConnection.proxyConnectTime,
-                    color: "bg-orange-500",
+                    order: 3,
                   },
                   {
                     label: "Proxy Auth",
                     value: firstConnection.proxyAuthTime,
                     color: "bg-indigo-500",
+                    order: 4,
+                  },
+                  {
+                    label: "Proxy Connect",
+                    value: firstConnection.proxyConnectTime,
+                    color: "bg-orange-500",
+                    order: 5,
                   },
                   {
                     label: "Request",
                     value: firstConnection.requestSendTime,
                     color: "bg-cyan-500",
+                    order: 6,
                   },
                   {
                     label: "Response Wait",
                     value: firstConnection.responseWaitTime,
                     color: "bg-pink-500",
+                    order: 7,
                   },
                   {
                     label: "Download",
                     value: firstConnection.responseDownloadTime,
                     color: "bg-emerald-500",
+                    order: 8,
                   },
-                ];
+                ]
+                  .filter((segment) => segment.value > 0)
+                  .sort((a, b) => a.order - b.order); // Filter and sort by order
+
+                // Calculate total time from only the relevant segments
+                const relevantTotal = segments.reduce(
+                  (sum, segment) => sum + segment.value,
+                  0
+                );
 
                 return segments.map((segment) => {
-                  const width = total > 0 ? (segment.value / total) * 100 : 0;
+                  const width =
+                    relevantTotal > 0
+                      ? (segment.value / relevantTotal) * 100
+                      : 0;
                   const left = currentPosition;
                   currentPosition += width;
 
@@ -238,9 +278,9 @@ export default function ProModeMetrics({
             </div>
           </div>
 
-          {/* Metric Cards */}
+          {/* Metric Cards - Only show relevant metrics */}
           <div className="grid grid-cols-2 gap-2">
-            {metricItems.map((item) => (
+            {relevantMetrics.map((item) => (
               <div
                 key={item.label}
                 className={cn(
@@ -260,7 +300,7 @@ export default function ProModeMetrics({
           </div>
         </div>
 
-        {/* Timeline Visualization */}
+        {/* Timeline Visualization - Only show relevant metrics */}
         <div className="rounded-lg p-4 border border-white/10">
           <h4 className="text-sm font-semibold mb-3 text-gray-200 flex items-center gap-2">
             <Clock size={16} />
@@ -268,7 +308,7 @@ export default function ProModeMetrics({
           </h4>
           <div className="relative">
             <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-gray-600"></div>
-            {metricItems.map((item) => {
+            {relevantMetrics.map((item) => {
               const percentage =
                 averageMetrics.totalTime > 0
                   ? (item.value / averageMetrics.totalTime) * 100
