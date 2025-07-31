@@ -43,6 +43,7 @@ No more slow or clunky testing tools. Get instant feedback with a detailed, real
   - **Easy Actions:** Copy proxy strings/IPs, view detailed breakdowns, and manage your results with a single click.
 - 🔄 **Automatic Updates:** The app notifies you when a new version is available, so you're always up-to-date.
 - 💻 **Cross-Platform:** Works seamlessly on macOS, Windows, and Linux.
+- **🧠 Pro Mode:** Advanced diagnostics like DNS timing, TCP handshake duration, proxy auth time, and more. For power users and professionals.
 
 ---
 
