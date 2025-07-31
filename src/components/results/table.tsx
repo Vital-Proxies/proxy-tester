@@ -28,8 +28,12 @@ const EmptyStateWaiting = () => (
         <Loader2 className="text-blue-300" size={20} />
       </div>
     </motion.div>
-    <h3 className="text-lg font-medium text-white mb-2">Testing Proxies</h3>
-    <p className="text-gray-400 text-center max-w-md">Analyzing proxies...</p>
+    <h3 className="text-lg font-medium text-white mb-2 mt-3">
+      Testing Proxies
+    </h3>
+    <p className="text-gray-400 text-center max-w-md">
+      Please wait while we test your proxies for connectivity and performance.
+    </p>
   </div>
 );
 
@@ -114,11 +118,10 @@ const QueuedProxiesTable = React.memo(({ proxies }: { proxies: Proxy[] }) => (
             </TableCell>
             <TableCell>
               <div className="flex items-center gap-2 w-fit px-2.5 rounded-lg py-1 text-xs font-semibold border bg-yellow-600/10 text-yellow-400 border-yellow-600/20">
-                <Clock size={12} />
                 <span>Queued</span>
               </div>
             </TableCell>
-            <TableCell colSpan={10} className="text-center text-gray-500">
+            <TableCell colSpan={10} className="text-center text-text-muted">
               Waiting to be tested
             </TableCell>
           </motion.tr>
