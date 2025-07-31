@@ -1,6 +1,6 @@
 {
   "name": "vital-proxy-tester",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "private": true,
   "author": "Expensiveee <expensiveee@vital-proxies.com>",
   "license": "MIT",
@@ -27,10 +27,13 @@
     "@radix-ui/react-progress": "^1.1.7",
     "@radix-ui/react-slot": "^1.2.3",
     "@radix-ui/react-switch": "^1.2.5",
+    "@radix-ui/react-tabs": "^1.1.12",
     "@radix-ui/react-tooltip": "^1.2.7",
+    "@tauri-apps/plugin-clipboard-manager": "~2",
     "@tauri-apps/plugin-dialog": "^2.3.0",
     "@tauri-apps/plugin-http": "~2",
     "@tauri-apps/plugin-opener": "~2",
+    "@tauri-apps/plugin-os": "~2",
     "@tauri-apps/plugin-process": "^2.3.0",
     "@tauri-apps/plugin-shell": "^2.3.0",
     "@tauri-apps/plugin-updater": "^2.9.0",
@@ -39,13 +42,16 @@
     "cors": "^2.8.5",
     "express": "^5.1.0",
     "framer-motion": "^12.23.6",
+    "got": "^14.4.7",
     "https-proxy-agent": "^7.0.6",
     "lucide-react": "^0.525.0",
     "next": "15.4.1",
+    "next-themes": "^0.4.6",
     "node-fetch": "^3.3.2",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "socks-proxy-agent": "^8.0.5",
+    "sonner": "^2.0.6",
     "tailwind-merge": "^3.3.1",
     "zustand": "^5.0.6"
   },
@@ -65,5 +71,10 @@
     "tailwindcss": "^4",
     "tw-animate-css": "^1.3.5",
     "typescript": "^5"
+  },
+  "eslintConfig": {
+    "rules": {
+      "@typescript-eslint/no-unused-vars": "off"
+    }
   }
 }

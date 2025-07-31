@@ -1,9 +1,21 @@
-import { NormalizedProxy, ProxyProtocol } from "@/types";
+import { NormalizedProxy, Proxy, ProxyProtocol } from "@/types";
 import { clsx, type ClassValue } from "clsx";
+import { isTauri } from "@tauri-apps/api/core";
 import { twMerge } from "tailwind-merge";
+import { openUrl } from "@tauri-apps/plugin-opener";
+import { platform } from "@tauri-apps/plugin-os";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
+}
+
+export function handleOpenUrl(url: string) {
+  if (isTauri()) {
+    openUrl(url).catch(console.error);
+  } else {
+    // In web environment, use window.open
+    window.open(url, "_blank");
+  }
 }
 
 export function countryCodeToFlag(isoCode: string): string {
@@ -89,4 +101,62 @@ export function normalizeProxy(raw: string): NormalizedProxy | null {
   // Unknown format
   console.log("Unknown or invalid proxy format:", raw);
   return null;
+}
+
+export async function extractRawStringsFromFile(
+  file: File,
+  fileExtension: string
+): Promise<string[]> {
+  const text = await file.text();
+  let proxies: string[] = [];
+
+  if (fileExtension === ".json") {
+    try {
+      const parsed = JSON.parse(text);
+      proxies = Array.isArray(parsed)
+        ? parsed.map((item) =>
+            typeof item === "string" ? item : JSON.stringify(item)
+          )
+        : [text];
+    } catch {
+      proxies = text
+        .split(/[\n\r,;]+/)
+        .map((line) => line.trim())
+        .filter(Boolean);
+    }
+  } else if (fileExtension === ".csv") {
+    proxies = text.split(/[\n\r]+/).flatMap((line) =>
+      line
+        .split(",")
+        .map((item) => item.trim())
+        .filter(Boolean)
+    );
+  } else {
+    proxies = text
+      .split(/[\n\r]+/)
+      .map((line) => line.trim())
+      .filter(Boolean);
+  }
+
+  return proxies;
+}
+
+export function convertRawStringsToProxy(raw: string[]): Proxy[] {
+  return raw
+    .map((raw) => {
+      const normalizedProxy = normalizeProxy(raw);
+      if (!normalizedProxy) return null;
+      return {
+        id: crypto.randomUUID(),
+        latency: 0,
+        raw,
+        protocol: normalizedProxy.protocol,
+        formatted: normalizedProxy.formatted,
+        simpleData: null,
+        proDetails: null,
+        error: null,
+        status: "unknown" as const,
+      } as Proxy;
+    })
+    .filter((p): p is Proxy => p !== null);
 }

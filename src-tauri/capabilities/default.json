@@ -6,7 +6,9 @@
   "permissions": [
     "core:default",
     "opener:default",
+    "os:default",
     "process:default",
+    "clipboard-manager:allow-read-text",
     {
       "identifier": "shell:allow-spawn",
       "allow": [

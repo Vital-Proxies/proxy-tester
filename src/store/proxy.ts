@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { Proxy, ProxyTesterOptions, TestStatus } from "@/types";
+import { ProModeOptions, Proxy, ProxyTesterOptions, TestStatus } from "@/types";
 
 type ProxyTesterState = {
   loadedProxies: Proxy[];
@@ -12,10 +12,13 @@ type ProxyTesterState = {
 
 type ProxyTesterActions = {
   replaceAllProxies: (proxies: Proxy[]) => void;
+  addLoadedProxies: (proxies: Proxy[]) => void;
   clearAll: () => void;
   setOptions: (option: Partial<ProxyTesterOptions>) => void;
   setTestStatus: (status: TestStatus) => void;
   removeTestedProxy: (proxy: Proxy) => void;
+
+  setMode: (mode: "simple" | "pro") => void;
 
   // New test lifecycle actions
   prepareForTest: (controller: AbortController) => void;
@@ -29,9 +32,20 @@ const initialState: ProxyTesterState = {
   testedProxies: [],
   isLoading: false,
   options: {
-    ipLookup: false,
-    latencyCheck: true,
+    activeMode: "simple",
+    simpleMode: {
+      ipLookup: true,
+      latencyCheck: true,
+    },
     targetUrl: "https://www.google.com",
+    proMode: {
+      connectionsPerProxy: 3,
+      testAllConnections: false,
+      detailedMetrics: false,
+      connectionPooling: true,
+      retryCount: 3,
+      customTimeout: 15000,
+    },
   },
   testStatus: "idle",
   abortController: null,
@@ -42,6 +56,19 @@ export const useProxyTesterStore = create<
 >()((set, get) => ({
   ...initialState,
 
+  setMode: (mode) =>
+    set((state) => ({
+      options: {
+        ...state.options,
+        activeMode: mode,
+      },
+    })),
+
+  addLoadedProxies: (proxies) =>
+    set((state) => ({
+      loadedProxies: [...state.loadedProxies, ...proxies],
+    })),
+
   replaceAllProxies: (proxies) => set({ loadedProxies: proxies }),
   setTestStatus: (status) => set({ testStatus: status }),
   clearAll: () =>
@@ -49,6 +76,7 @@ export const useProxyTesterStore = create<
       testedProxies: [],
       loadedProxies: [],
       isLoading: false,
+      testStatus: "idle",
     }),
 
   stopTest: () => {
@@ -82,9 +110,52 @@ export const useProxyTesterStore = create<
     })),
 
   addTestResult: (result) =>
-    set((state) => ({
-      testedProxies: [...state.testedProxies, result],
-    })),
+    set((state) => {
+      const existingIndex = state.testedProxies.findIndex(
+        (p) => p.id === result.id
+      );
+
+      if (existingIndex >= 0) {
+        // Update existing proxy
+        const updatedProxies = [...state.testedProxies];
+        updatedProxies[existingIndex] = result;
+        return { testedProxies: updatedProxies };
+      } else {
+        // Add new proxy
+        return { testedProxies: [...state.testedProxies, result] };
+      }
+    }),
 
   finalizeTest: () => set({ isLoading: false, testStatus: "finished" }),
+
+  // Pro Mode specific actions
+  testProxyProMode: async (proxy: string) => {
+    const state = get();
+    if (!state.options.proMode) {
+      throw new Error("Pro Mode is not enabled");
+    }
+
+    try {
+      const response = await fetch("/api/test-proxy-pro", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          proxy,
+          options: state.options,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const result = await response.json();
+      return result;
+    } catch (error) {
+      console.error("Pro Mode test failed:", error);
+      throw error;
+    }
+  },
 }));
