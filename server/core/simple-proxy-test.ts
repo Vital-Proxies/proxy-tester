@@ -60,10 +60,39 @@ export async function testSimpleMode(
             city: ipData.geolocation?.city || "Unknown",
             isp: ipData.geolocation?.isp || "Unknown",
           };
+        } else {
+          result.status = "fail";
+
+          result.simpleData = {
+            ip: "Could not retrieve IP",
+            country: "Unknown",
+            countryCode: "XX",
+            city: "Unknown",
+            isp: "Unknown",
+          };
+
+          result.error = {
+            message: "IP lookup failed",
+            code: "IP_LOOKUP_FAILED",
+            suggestion:
+              "We could not retrieve IP information, but the proxy is functional.",
+          };
         }
       } catch (error) {
-        console.debug("IP lookup failed (non-critical):", error);
-        // Don't fail the whole test if IP lookup fails
+        result.simpleData = {
+          ip: "Could not retrieve IP",
+          country: "Unknown",
+          countryCode: "XX",
+          city: "Unknown",
+          isp: "Unknown",
+        };
+        result.status = "fail";
+        result.error = {
+          message: "IP lookup failed",
+          code: "IP_LOOKUP_ERROR",
+          suggestion: "Check proxy configuration and try again",
+          protocolsTried: [connectivityResult.protocol],
+        };
       }
     }
 
