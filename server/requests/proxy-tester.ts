@@ -1806,7 +1806,7 @@ export class EnhancedProxyTester {
   ): Promise<{ ip?: string; geolocation?: any } | undefined> {
     try {
       const ipServiceUrl = needsGeo
-        ? "https://ipinfo.io/json"
+        ? "https://ipwho.is/"
         : "https://httpbin.org/ip";
 
       const parsedProxy = this.parseProxyString(proxyString);
@@ -1867,12 +1867,11 @@ export class EnhancedProxyTester {
 
           if (needsGeo && data) {
             result.geolocation = {
-              country: data.country || data.countryCode,
-              countryCode: data.country || data.countryCode,
+              country: data.country,
+              countryCode: data.country_code,
               city: data.city,
-              region: data.region || data.regionName,
-              isp: data.org || data.isp,
-              loc: data.loc || `${data.lat},${data.lon}`,
+              region: data.region,
+              isp: data.connection.isp,
             };
           }
 
