@@ -6,6 +6,12 @@ const internalHost = process.env.TAURI_DEV_HOST || "localhost";
 const nextConfig: NextConfig = {
   output: "export",
   images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "flagpedia.com",
+      },
+    ],
     unoptimized: true,
   },
   assetPrefix: isProd ? undefined : `http://${internalHost}:3000`,

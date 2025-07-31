@@ -18,16 +18,6 @@ export function handleOpenUrl(url: string) {
   }
 }
 
-export function countryCodeToFlag(isoCode: string): string {
-  if (!isoCode || isoCode.length !== 2) {
-    return "";
-  }
-  return String.fromCodePoint(
-    isoCode.toUpperCase().charCodeAt(0) - 65 + 0x1f1e6,
-    isoCode.toUpperCase().charCodeAt(1) - 65 + 0x1f1e6
-  );
-}
-
 export function normalizeProxy(raw: string): NormalizedProxy | null {
   const trimmed = raw.trim();
 

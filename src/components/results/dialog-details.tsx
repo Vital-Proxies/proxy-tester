@@ -11,11 +11,13 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "../ui/alert-dialog";
-import { cn, countryCodeToFlag } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { Check, Clipboard, Globe2 } from "lucide-react";
 import ProModeMetrics from "./dialog-detail-pro";
 import useCopyToClipboard from "@/hooks/useCopyToClipboard";
 import { useProxyTesterStore } from "@/store/proxy";
+import Image from "next/image";
+import Flag from "../flag";
 
 export default function DetailsDialog({
   proxy,
@@ -84,7 +86,7 @@ export default function DetailsDialog({
           <AlertDialogTitle className="flex items-center gap-1.5">
             <span className="text-2xl">
               {proxy.simpleData?.countryCode ? (
-                countryCodeToFlag(proxy.simpleData.countryCode ?? "")
+                <Flag countryCode={proxy.simpleData.countryCode} size={28} />
               ) : (
                 <Globe2 className="size-5" />
               )}

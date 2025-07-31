@@ -7,7 +7,7 @@ import {
   type Proxy,
   type ProxyStatus,
 } from "@/types";
-import { cn, countryCodeToFlag } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { TableCell } from "@/components/ui/table";
 import { Check, Clipboard, Eye, Globe2, Trash } from "lucide-react";
 import { Button } from "../ui/button";
@@ -15,6 +15,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
 import useCopyToClipboard from "@/hooks/useCopyToClipboard";
 import TableRowActions from "./table-row-actions";
+import Flag from "../flag";
 
 export default function ResultsTableRowSimple({
   proxy,
@@ -150,9 +151,9 @@ export default function ResultsTableRowSimple({
       {options.simpleMode.ipLookup && (
         <TableCell>
           {proxy.simpleData?.ip && proxy.simpleData?.countryCode ? (
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-3">
               <span className="text-xl">
-                {countryCodeToFlag(proxy.simpleData.countryCode)}
+                <Flag countryCode={proxy.simpleData.countryCode} size={26} />
               </span>
               <div className="flex flex-col">
                 <span className="text-sm font-medium text-secondary-foreground">
