@@ -175,7 +175,6 @@ export default function ProModeMetrics({
                 const firstConnection =
                   connections.find((conn) => conn.isFirstConnection) ||
                   averageMetrics;
-                const total = firstConnection.totalTime;
                 let currentPosition = 0;
 
                 const segments = [

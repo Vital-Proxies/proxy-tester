@@ -1,5 +1,5 @@
 import { FileText, Upload } from "lucide-react";
-import { useEffect, useLayoutEffect, useRef } from "react";
+import { useLayoutEffect, useRef } from "react";
 import { Button } from "../ui/button";
 import { motion } from "framer-motion";
 

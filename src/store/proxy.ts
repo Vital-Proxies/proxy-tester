@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { ProModeOptions, Proxy, ProxyTesterOptions, TestStatus } from "@/types";
+import { Proxy, ProxyTesterOptions, TestStatus } from "@/types";
 
 type ProxyTesterState = {
   loadedProxies: Proxy[];

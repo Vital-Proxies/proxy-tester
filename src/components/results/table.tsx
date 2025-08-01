@@ -2,8 +2,8 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useProxyTesterStore } from "@/store/proxy";
-import { Table, TableHeader, TableCell, TableRow } from "../ui/table";
-import { Loader2, Clock } from "lucide-react";
+import { Table, TableHeader, TableCell } from "../ui/table";
+import { Loader2 } from "lucide-react";
 import { isTauri } from "@tauri-apps/api/core";
 import { platform } from "@tauri-apps/plugin-os";
 import {

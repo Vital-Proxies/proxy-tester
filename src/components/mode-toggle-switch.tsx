@@ -6,7 +6,6 @@ import { Button } from "./ui/button";
 import { useProxyTesterStore } from "@/store/proxy";
 import { motion } from "framer-motion";
 import clsx from "clsx";
-import { cn } from "@/lib/utils";
 
 export default function ModeToggleSwitch({ enableTooltip = true }) {
   const { options, setOptions } = useProxyTesterStore();

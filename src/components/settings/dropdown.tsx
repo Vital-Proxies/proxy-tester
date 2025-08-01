@@ -1,11 +1,10 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronDown, Settings } from "lucide-react";
+import { Settings } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useProxyTesterStore } from "@/store/proxy";
 import { TooltipProvider } from "../ui/tooltip";
-import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
 import SimpleModeSettings from "./simple";
 import ProModeSettings from "./pro";
 import { Button } from "../ui/button";
@@ -36,17 +35,12 @@ const slideVariants = {
 export default function SettingsDropdown() {
   const { options, setMode } = useProxyTesterStore();
   const [showSettings, setShowSettings] = useState(false);
-  const [[activeTabIndex, direction], setActiveTab] = useState([0, 0]);
+  const [[activeTabIndex, direction]] = useState([0, 0]);
   const [contentHeight, setContentHeight] = useState(0);
   const [dropdownHeight, setDropdownHeight] = useState<number | "auto">("auto");
   const settingsRef = useRef<HTMLDivElement>(null);
 
   const activeTabId = TABS[activeTabIndex].id;
-
-  const handleTabChange = (newTabIndex: number) => {
-    const oldTabIndex = activeTabIndex;
-    setActiveTab([newTabIndex, newTabIndex > oldTabIndex ? 1 : -1]);
-  };
 
   // Calculate dropdown height when content height changes
   useEffect(() => {

@@ -1,10 +1,9 @@
-import { TooltipProvider, TooltipTrigger } from "@radix-ui/react-tooltip";
+import { TooltipTrigger } from "@radix-ui/react-tooltip";
 import { Tooltip, TooltipContent } from "../ui/tooltip";
-import { Activity, Globe, Search } from "lucide-react";
+import { Activity, Globe } from "lucide-react";
 import { Label } from "../ui/label";
 import { Switch } from "../ui/switch";
 import { useProxyTesterStore } from "@/store/proxy";
-import { Input } from "../ui/input";
 import { useRef, useLayoutEffect, Dispatch, SetStateAction } from "react";
 
 export default function SimpleModeSettings({

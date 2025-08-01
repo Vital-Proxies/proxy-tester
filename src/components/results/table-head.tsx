@@ -1,5 +1,5 @@
 import { useProxyTesterStore } from "@/store/proxy";
-import { TableHead, TableHeader, TableRow } from "../ui/table";
+import { TableHead, TableRow } from "../ui/table";
 import {
   Tooltip,
   TooltipContent,

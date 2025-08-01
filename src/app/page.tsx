@@ -8,7 +8,6 @@ import SettingsDropdown from "@/components/settings/dropdown";
 import TargetUrlInput from "@/components/target-url-input";
 import UpdateChecker from "@/components/updater/update-checker";
 import { useGlobalPasteProxies } from "@/hooks/useGlobalPasteProxies";
-import dynamic from "next/dynamic";
 
 export default function Home() {
   useGlobalPasteProxies();

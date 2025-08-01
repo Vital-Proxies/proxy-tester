@@ -2,11 +2,8 @@
 
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { openUrl } from "@tauri-apps/plugin-opener";
-import { isTauri } from "@tauri-apps/api/core";
-import { ArrowRight, Zap } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import HeaderSocials from "./header-socials";
-import { useProxyTesterStore } from "@/store/proxy";
 import { handleOpenUrl } from "@/lib/utils";
 
 export default function Header() {

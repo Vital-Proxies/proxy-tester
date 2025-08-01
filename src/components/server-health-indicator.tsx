@@ -39,7 +39,11 @@ export default function ServerHealthIndicator() {
           setHealthy(false);
         }
       } catch (error) {
+        console.error("Error checking server health:", error);
         setHealthy(false);
+        toast.error(
+          "The backend server is unreachable, please restart the app"
+        );
       }
     };
     checkServerHealth();
@@ -138,63 +142,6 @@ export default function ServerHealthIndicator() {
         duration: 1,
         repeat: Infinity,
         ease: "linear" as const,
-      },
-    },
-  };
-
-  const pulseVariants = {
-    initial: { scale: 0.8, opacity: 0.2 },
-    animate: {
-      scale: [0.8, 1.2, 0.8],
-      opacity: [0.2, 0.4, 0.2],
-      transition: {
-        duration: 2,
-        repeat: Infinity,
-        ease: "easeInOut" as const,
-      },
-    },
-  };
-
-  const dotVariants = {
-    initial: { scale: 0 },
-    animate: {
-      scale: 1,
-      transition: {
-        type: "spring" as const,
-        stiffness: 500,
-        damping: 25,
-        delay: 0.2,
-      },
-    },
-    pulse: {
-      scale: [1, 1.2, 1],
-      transition: {
-        duration: 1.5,
-        repeat: Infinity,
-        ease: "easeInOut" as const,
-      },
-    },
-  };
-
-  const tooltipVariants = {
-    hidden: {
-      opacity: 0,
-      scale: 0.9,
-      y: 10,
-      transition: {
-        type: "spring" as const,
-        stiffness: 500,
-        damping: 30,
-      },
-    },
-    visible: {
-      opacity: 1,
-      scale: 1,
-      y: 0,
-      transition: {
-        type: "spring" as const,
-        stiffness: 500,
-        damping: 25,
       },
     },
   };

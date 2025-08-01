@@ -2,16 +2,13 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { Upload, FileText, Clipboard } from "lucide-react";
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Button } from "../ui/button";
-import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
 import { useProxyTesterStore } from "@/store/proxy";
 import {
   extractRawStringsFromFile,
-  normalizeProxy,
   convertRawStringsToProxy,
 } from "@/lib/utils";
-import { type Proxy } from "@/types";
 import PasteTab from "./paste-tab";
 import ImportTab from "./import-tab";
 import LoadProxiesToggle from "./toggle";
@@ -118,6 +115,7 @@ export default function LoadProxiesDropdown() {
       replaceAllProxies(processessedProxies);
       setShowDropdown(false);
     } catch (e) {
+      console.error("Error processing file:", e);
       alert("Error processing file. Please check the format and try again.");
     } finally {
       setIsUploading(false);

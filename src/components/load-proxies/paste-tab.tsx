@@ -1,19 +1,10 @@
-// Updated ProxyPasteBox - remove the pro mode indicator since it's now in settings
 "use client";
 
-import {
-  useCallback,
-  useLayoutEffect,
-  useRef,
-  useState,
-  useTransition,
-} from "react";
+import { useLayoutEffect, useRef, useState, useTransition } from "react";
 import { useProxyTesterStore } from "@/store/proxy";
 import { normalizeProxy } from "@/lib/utils";
 import { type Proxy } from "@/types";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, Zap, Shield } from "lucide-react";
-import { AnimatePresence, motion } from "framer-motion";
 
 export default function PasteTab({
   setHeight,
@@ -22,7 +13,7 @@ export default function PasteTab({
 }) {
   const { replaceAllProxies, isLoading } = useProxyTesterStore();
   const [text, setText] = useState("");
-  const [isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
 
   const ref = useRef<HTMLDivElement>(null);
 
@@ -42,7 +33,7 @@ export default function PasteTab({
         .filter(Boolean);
 
       const newProxies: Proxy[] = rawProxies
-        .map((raw, index) => {
+        .map((raw) => {
           const normalizedProxy = normalizeProxy(raw);
           if (!normalizedProxy) return null;
 

@@ -1,6 +1,4 @@
-// Fix for ResultsTableRowSimple.tsx - Remove the motion.tr wrapper since it's handled in parent
 "use client";
-import { motion } from "framer-motion";
 import {
   ProxyProtocol,
   ProxyTesterOptions,
@@ -9,8 +7,7 @@ import {
 } from "@/types";
 import { cn } from "@/lib/utils";
 import { TableCell } from "@/components/ui/table";
-import { Check, Clipboard, Eye, Globe2, Trash } from "lucide-react";
-import { Button } from "../ui/button";
+import { Check, Clipboard } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
 import useCopyToClipboard from "@/hooks/useCopyToClipboard";
@@ -24,7 +21,6 @@ export default function ResultsTableRowSimple({
   proxy: Proxy;
   options: ProxyTesterOptions;
 }) {
-  const [isProxyCopied, copyProxy] = useCopyToClipboard();
   const [isIpCopied, copyIp] = useCopyToClipboard();
 
   const statusConfig: Record<

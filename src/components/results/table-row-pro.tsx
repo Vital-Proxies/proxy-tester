@@ -1,5 +1,4 @@
 "use client";
-import { motion } from "framer-motion";
 import {
   ProxyProtocol,
   ProxyTesterOptions,
@@ -14,7 +13,6 @@ import TableRowActions from "./table-row-actions";
 
 export default function ResultsTableRowPro({
   proxy,
-  options,
 }: {
   proxy: Proxy;
   options: ProxyTesterOptions;

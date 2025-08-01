@@ -9,10 +9,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import {
-  CheckCircle,
   Loader2,
-  X,
-  Zap,
   Trash2,
   Play,
   Square,
@@ -44,7 +41,6 @@ export default function ProxyToolbar() {
     finalizeTest,
     stopTest,
     clearAll,
-    setOptions,
   } = useProxyTesterStore();
 
   const stats = useMemo(() => {

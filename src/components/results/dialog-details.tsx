@@ -1,5 +1,4 @@
-import { Proxy, ProxyProtocol, ProxyStatus } from "@/types";
-import { Button } from "../ui/button";
+import { Proxy, ProxyStatus } from "@/types";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,8 +14,6 @@ import { cn } from "@/lib/utils";
 import { Check, Clipboard, Globe2 } from "lucide-react";
 import ProModeMetrics from "./dialog-detail-pro";
 import useCopyToClipboard from "@/hooks/useCopyToClipboard";
-import { useProxyTesterStore } from "@/store/proxy";
-import Image from "next/image";
 import Flag from "../flag";
 
 export default function DetailsDialog({
@@ -26,10 +23,7 @@ export default function DetailsDialog({
   proxy: Proxy;
   children: React.ReactNode;
 }) {
-  const { options } = useProxyTesterStore();
-
   const [isProxyCopied, copyProxy] = useCopyToClipboard();
-  const [isIpCopied, copyIp] = useCopyToClipboard();
 
   const statusConfig: Record<
     ProxyStatus,
@@ -49,34 +43,7 @@ export default function DetailsDialog({
     },
   };
 
-  const protocolConfig: Record<
-    ProxyProtocol,
-    { label: string; className: string }
-  > = {
-    http: {
-      label: "HTTP",
-      className: "bg-blue-600/10 text-blue-400 border-blue-600/20",
-    },
-    https: {
-      label: "HTTPS",
-      className: "bg-sky-600/10 text-sky-400 border-sky-600/20",
-    },
-    socks4: {
-      label: "SOCKS4",
-      className: "bg-purple-600/10 text-purple-400 border-purple-600/20",
-    },
-    socks5: {
-      label: "SOCKS5",
-      className: "bg-violet-600/10 text-violet-400 border-violet-600/20",
-    },
-    unknown: {
-      label: "N/A",
-      className: "bg-gray-600/10 text-gray-400 border-gray-600/20",
-    },
-  };
-
   const currentStatus = statusConfig[proxy.status];
-  const currentProtocol = protocolConfig[proxy.protocol];
 
   return (
     <AlertDialog>
