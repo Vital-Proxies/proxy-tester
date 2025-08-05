@@ -205,4 +205,6 @@ const gracefulShutdown = (signal: string) => {
 process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
 process.on("SIGINT", () => gracefulShutdown("SIGINT"));
 
-app.listen(port, "127.0.0.1", () => {});
+app.listen(port, "127.0.0.1", () => {
+  console.log(`🚀 Server is running at http://127.0.0.1:${port}`);
+});
