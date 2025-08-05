@@ -15,7 +15,7 @@ import {
 
 export default function ServerHealthIndicator() {
   const { getUrl, fetch } = useApi();
-  const [healthy, setHealthy] = useState<boolean | null>(null);
+  const [healthy, setHealthy] = useState<boolean | null>(true);
 
   useEffect(() => {
     const checkServerHealth = async () => {
