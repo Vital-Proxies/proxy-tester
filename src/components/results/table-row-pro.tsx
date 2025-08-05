@@ -10,6 +10,8 @@ import { TableCell } from "../ui/table";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { cn } from "@/lib/utils";
 import TableRowActions from "./table-row-actions";
+import useCopyToClipboard from "@/hooks/useCopyToClipboard";
+import { Check, Clipboard } from "lucide-react";
 
 export default function ResultsTableRowPro({
   proxy,
@@ -18,6 +20,8 @@ export default function ResultsTableRowPro({
   options: ProxyTesterOptions;
 }) {
   {
+    const [isProxyCopied, copyProxy] = useCopyToClipboard();
+
     const statusConfig: Record<
       ProxyStatus,
       { className: string; label: string }
@@ -70,13 +74,24 @@ export default function ResultsTableRowPro({
         <TableCell className="font-mono text-sm max-w-[210px]">
           <Tooltip>
             <TooltipTrigger asChild>
-              <div className="flex h-full w-full cursor-pointer items-center justify-start">
+              <div
+                onClick={() => copyProxy(proxy.raw)}
+                className="flex h-full w-full cursor-pointer items-center justify-start gap-1.5"
+              >
                 <span className="truncate block">{proxy.formatted}</span>
+                {isProxyCopied ? (
+                  <Check className="size-3 text-green-500 shrink-0" />
+                ) : (
+                  <Clipboard className="size-3 shrink-0" />
+                )}
               </div>
             </TooltipTrigger>
             <TooltipContent>
               <div className="space-y-2">
                 <p className="font-medium">Full Proxy Address</p>
+                <p className="text-xs text-white/70">
+                  Click to copy full address to clipboard
+                </p>
                 <div className="max-w-xs break-all font-mono text-sm bg-white/5 p-2 rounded border">
                   {proxy.raw}
                 </div>
