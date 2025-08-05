@@ -12,7 +12,7 @@ export async function testSimpleMode(
   console.debug(`⚡ Simple Mode: Testing ${proxy.formatted}`);
 
   const controller = new AbortController();
-  const timeout = 8000; // Simple mode timeout
+  const timeout = 3000; // Simple mode timeout
   const timeoutId = setTimeout(() => controller.abort(), timeout);
 
   try {
@@ -46,8 +46,8 @@ export async function testSimpleMode(
     if (options.simpleMode.ipLookup) {
       try {
         const ipData = await enhancedProxyTester.getExitIpAndGeoOptimized(
-          proxy.raw,
-          5000, // Fast IP lookup timeout
+          proxy.formatted,
+          2000, // Fast IP lookup timeout
           connectivityResult.protocol,
           true // Get geolocation
         );
@@ -141,7 +141,7 @@ async function testBasicConnectivity(
   const startTime = performance.now();
 
   // Parse proxy
-  const parsedProxy = enhancedProxyTester.parseProxyString(proxy.raw);
+  const parsedProxy = enhancedProxyTester.parseProxyString(proxy.formatted);
   if (!parsedProxy) {
     return {
       success: false,
@@ -158,7 +158,7 @@ async function testBasicConnectivity(
   const protocolsToTry =
     proxy.protocol !== "unknown"
       ? [proxy.protocol]
-      : enhancedProxyTester.getOptimalProtocolOrder(proxy.raw);
+      : enhancedProxyTester.getOptimalProtocolOrder(proxy.formatted);
 
   // Try protocols until one works
   for (const protocol of protocolsToTry) {
