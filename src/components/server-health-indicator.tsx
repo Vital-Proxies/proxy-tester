@@ -34,7 +34,7 @@ export default function ServerHealthIndicator() {
         } else {
           toast.error("Backend server is unreachable", {
             description:
-              "Try restarting the app or make sure nothing is running on port 3001.",
+              "Try restarting the app or make sure nothing is running on port 6717.",
           });
           setHealthy(false);
         }
@@ -42,11 +42,11 @@ export default function ServerHealthIndicator() {
         console.error("Error checking server health:", error);
         setHealthy(false);
         toast.error(
-          "The backend server is unreachable, please restart the app"
+          "The backend server is unreachable, please restart the app",
         );
       }
     };
-    checkServerHealth();
+
     const interval = setInterval(checkServerHealth, 10000);
     return () => clearInterval(interval);
   }, [fetch, getUrl]);

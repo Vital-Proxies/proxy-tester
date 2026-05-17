@@ -10,13 +10,13 @@ import {
 } from "./core/pro-proxy-test";
 
 const app = express();
-const port = 3001;
+const port = 6717;
 
 app.use(
   cors({
     origin: [
       "http://localhost:3000",
-      "http://localhost:3001",
+      "http://localhost:6717",
       "tauri://localhost",
     ],
   })

@@ -5,7 +5,7 @@ import { Command, Child } from "@tauri-apps/plugin-shell";
 import { isTauri } from "@tauri-apps/api/core";
 import { fetch as tauriFetch } from "@tauri-apps/plugin-http";
 
-const API_PORT = 3001;
+const API_PORT = 6717;
 const API_URL = `http://localhost:${API_PORT}`;
 
 export function useApi() {
