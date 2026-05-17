@@ -31,7 +31,7 @@ export default function Header() {
         <Button
           onClick={() =>
             handleOpenUrl(
-              "https://vital-proxies.com/?utm_source=vital-tester&utm_medium=app&utm_campaign=try-pro"
+              "https://vital-proxies.com/?utm_source=vital-tester&utm_medium=app&utm_campaign=button-free-trial"
             )
           }
         >

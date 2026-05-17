@@ -13,7 +13,7 @@ import { handleOpenUrl } from "@/lib/utils";
 
 const socialLinks = [
   {
-    href: "https://www.vital-proxies.com/?utm_source=vital-tester&utm_medium=app&utm_campaign=buy-proxies",
+    href: "https://www.vital-proxies.com/?utm_source=vital-tester&utm_medium=app&utm_campaign=button-website",
     label: "Website",
     icon: <Globe className="size-4" />,
   },
