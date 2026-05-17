@@ -25,6 +25,7 @@ import { motion } from "framer-motion";
 import { useMemo, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { isTauri } from "@tauri-apps/api/core";
+import ExportResultsMenu from "@/components/results/export-results-menu";
 
 export default function ProxyToolbar() {
   const { getUrl, fetch } = useApi();
@@ -413,6 +414,8 @@ export default function ProxyToolbar() {
             <Trash2 className="w-4 h-4 mr-2" />
             Clear
           </Button>
+
+          <ExportResultsMenu />
 
           {testStatus === "testing" ? (
             <Button

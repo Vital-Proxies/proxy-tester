@@ -41,6 +41,7 @@ No more slow or clunky testing tools. Get instant feedback with a detailed, real
 - ✨ **Smart & Interactive UI:**
   - **Auto-Parsing:** Paste your list in almost any common format (`host:port:user:pass`, `user:pass@host:port`, etc.) and the app handles it.
   - **Easy Actions:** Copy proxy strings/IPs, view detailed breakdowns, and manage your results with a single click.
+  - **Export results:** After a run finishes, use **Export** next to the toolbar actions to copy or download raw proxy lines (all, working, or failed)—the same format you can paste under **Load Proxies**—or download a **CSV** with status, latency, exit IP, country, and error columns for spreadsheets.
 - 🔄 **Automatic Updates:** The app notifies you when a new version is available, so you're always up-to-date.
 - 💻 **Cross-Platform:** Works seamlessly on macOS, Windows, and Linux.
 - **🧠 Pro Mode:** Advanced diagnostics like DNS timing, TCP handshake duration, proxy auth time, and more. For power users and professionals.
@@ -66,7 +67,7 @@ _(Note: The version numbers in the filenames update with each new release. These
 > **Important Note for macOS Users:**
 > The first time you run the app, you will need to **right-click** the application icon and select **"Open"** from the context menu. In the security prompt that appears, click **"Open"** again. You only need to do this once.
 
-Once installed, simply paste your proxy list, configure your options, and click "Run Test"!
+Once installed, simply paste your proxy list, configure your options, and click "Run Test". When the run completes, use **Export** to copy or save results as text or CSV.
 
 ---
 
